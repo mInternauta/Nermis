@@ -87,10 +87,10 @@ public class nWebWatcher implements nServiceWatcher {
                 results.State = nServiceState.CANT_EXECUTE;
             }
         } catch (MalformedURLException ex) {
-            results.Message = ex.getLocalizedMessage();
+            results.Message = ex.toString();
             results.State = nServiceState.CANT_EXECUTE;
         } catch (IOException ex) {            
-            results.Message = ex.getLocalizedMessage();
+            results.Message = ex.toString();
             results.State = nServiceState.OFFLINE;
         }
         

@@ -234,6 +234,10 @@ public class CLIService implements ICLICommand {
             } else {
                 System.out.println("Cant list properties from a watcher with blank name");
             }
+                
+            System.out.println("Extended Web Server Properties: ");
+            System.out.println("ShowInWeb = 0 - Dont show the service in the web page page / 1 - show the service");    
+            System.out.println("WebOrder = A Number to order by list (Default: 0)");
         }
     }
 

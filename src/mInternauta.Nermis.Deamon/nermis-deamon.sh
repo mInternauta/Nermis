@@ -1,60 +1,67 @@
-#! /bin/sh
-#
-# -----------------------------------
-# Initscript for the Nermis
-# -----------------------------------
-#
+#!/bin/sh
+### BEGIN INIT INFO
+# Provides:          NermisService
+# Required-Start:    $local_fs $network $named $time $syslog
+# Required-Stop:     $local_fs $network $named $time $syslog
+# Default-Start:     2 3 4 5
+# Default-Stop:      0 1 6
+# Description:       Nermis Monitoring Service
+### END INIT INFO
 
-set -e
-PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin
-DESC="Nermis"
-NAME=nermis
-INSTALL_PATH="/usr/local/nermis/"
-DAEMON="/usr/bin/java -jar nermis.jar --service"
-PIDFILE=/var/run/$NAME.pid
-SCRIPTNAME=/etc/init.d/$NAME
+SCRIPT="bash /storage/Nermis/start-service.sh"
+RUNAS=root
 
-# Gracefully exit if the package has been removed.
-test -x /usr/bin/java || exit 0
+PIDFILE="/var/run/NermisService.pid"
+LOGFILE="/var/log/NermisService.log"
 
-# ---------------------------------------
-# Function that starts the daemon/service
-# ---------------------------------------
-d_start()
-{
-su -p -s /bin/sh "cd $INSTALL_PATH & $DAEMON &> /dev/null & echo $!" > $PIDFILE
+start() {
+  if [ -f /var/run/$PIDNAME ] && kill -0 $(cat /var/run/$PIDNAME); then
+    echo 'Service already running' >&2
+    return 1
+  fi
+  echo 'Starting service…' >&2
+  local CMD="$SCRIPT &> \"$LOGFILE\" & echo \$!"
+  su -c "$CMD" $RUNAS > "$PIDFILE"
+  echo 'Service started' >&2
 }
 
-# --------------------------------------
-# Function that stops the daemon/service
-# --------------------------------------
-d_stop()
-{
-start-stop-daemon --stop --quiet --pidfile $PIDFILE
+stop() {
+  if [ ! -f "$PIDFILE" ] || ! kill -0 $(cat "$PIDFILE"); then
+    echo 'Service not running' >&2
+    return 1
+  fi
+  echo 'Stopping service…' >&2
+  kill -15 $(cat "$PIDFILE") && rm -f "$PIDFILE"
+  echo 'Service stopped' >&2
+}
+
+uninstall() {
+  echo -n "Are you really sure you want to uninstall this service? That cannot be undone. [yes|No] "
+  local SURE
+  read SURE
+  if [ "$SURE" = "yes" ]; then
+    stop
+    rm -f "$PIDFILE"
+    echo "Notice: log file is not be removed: '$LOGFILE'" >&2
+    update-rc.d -f NermisService remove
+    rm -fv "$0"
+  fi
 }
 
 case "$1" in
-start)
-echo -n "Starting $DESC: $NAME"
-d_start
-echo "."
-;;
-stop)
-echo -n "Stopping $DESC: $NAME"
-d_stop
-echo "."
-;;
-restart|force-reload)
-echo -n "Restarting $DESC: $NAME"
-d_stop
-sleep 1
-d_start
-echo "."
-;;
-*)
-echo "Usage: $SCRIPTNAME {start|stop|restart|force-reload}" >&2
-exit 1
-;;
+  start)
+    start
+    ;;
+  stop)
+    stop
+    ;;
+  uninstall)
+    uninstall
+    ;;
+  retart)
+    stop
+    start
+    ;;
+  *)
+    echo "Usage: $0 {start|stop|restart|uninstall}"
 esac
-
-exit 0

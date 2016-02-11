@@ -27,9 +27,24 @@ A small project that monitors online services and displays a web page that says 
 Just type "help" for a list of commands in CLI mode, you will need to configure and create services for the Nermis (Type "services -help" for services help)
 
 The default web page is:
+
 http://localhost:5000/
 
 http://localhost:5000/status.do
+
+## Installing Service in Linux 
+
+First step:
+
+Change the installation directory in the SCRIPT variable on the nermis-deamon.sh file!
+
+Second step:
+
+Copy and install the deamon script
+
+	cp "nermis-deamon.sh" "/etc/init.d/NermisService"
+	chmod +x /etc/init.d/NermisService
+	update-rc.d NermisService defaults
 
 ## How do i Download?
 Check for Releases in Github page.

@@ -68,10 +68,10 @@ public class nOdbcWatcher implements nServiceWatcher {
             
             conn.close();
         } catch (ClassNotFoundException ex) {
-            results.Message = ex.getLocalizedMessage();
+            results.Message = ex.toString();
             results.State = nServiceState.CANT_EXECUTE;
         } catch (SQLException ex) {
-            results.Message = ex.getLocalizedMessage();
+            results.Message = ex.toString();
             results.State = nServiceState.OFFLINE;
         }
         

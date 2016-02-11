@@ -1,2 +1,5 @@
 #!/bin/bash
-java -jar nermis.jar --service
+pushd `dirname $0` > /dev/null
+ARGS=--service
+java -jar nermis.jar "$ARGS"
+popd > /dev/null

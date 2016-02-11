@@ -69,7 +69,7 @@ public class nFtpWatcher implements nServiceWatcher {
             // Disconnect
             ftp.disconnect();
         } catch (IOException ex) {
-            result.Message = ex.getLocalizedMessage();
+            result.Message = ex.toString();
             result.State = nServiceState.CANT_EXECUTE;
         }
         

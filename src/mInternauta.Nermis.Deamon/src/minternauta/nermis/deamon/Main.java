@@ -35,13 +35,13 @@ public class Main {
         Controller = new nController();
         
         // - Check if is in service mode
-        if(Arrays.asList(args).contains("--service")) {
-           System.out.println("Service Mode"); 
-           isInCLI = false;
-        } else {
-            System.out.println("CLI Mode"); 
-           isInCLI = true;
-        }     
+        isInCLI = true;
+        for(String arg : args) {
+            if(arg.trim().equalsIgnoreCase("--service")) {
+                isInCLI = false;
+                break;
+            }
+        }
         
         // - Startup the Controller if is in Service Mode
         if(isInCLI == false) {

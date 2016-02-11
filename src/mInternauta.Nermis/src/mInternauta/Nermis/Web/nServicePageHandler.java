@@ -21,6 +21,10 @@ package mInternauta.Nermis.Web;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.text.DateFormat;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.Date;
 import java.util.Locale;
 import java.util.Map.Entry;
 import javax.servlet.ServletException;
@@ -63,15 +67,59 @@ public class nServicePageHandler extends AbstractHandler {
         if(tplServiceItem.isEmpty() == false) {   
             nServiceStateTable states = storage.loadStates();
             
-            for(Entry<String,nServiceStateRecord> entry : states.entrySet()) {
-                nService service = nServiceHelper.GetService(entry.getKey());
-                nServiceStateRecord record = entry.getValue();
+            ArrayList<nService> services = new ArrayList<>();
+            services = nServiceHelper.AllServices();
+            
+            if(services != null && services.size() > 0) {
+                 Collections.sort(services, new Comparator<nService>() {
+                    @Override
+                    public int compare(nService o1, nService o2) {
+                        Integer o1Order = 0;
+                        Integer o2Order = 0;
+                        
+                        if(o1.Properties != null) {
+                            o1Order = Integer.valueOf(o1.Properties.getOrDefault("WebOrder", "0"));
+                        }
+                        
+                        if(o1.Properties != null) {
+                            o2Order = Integer.valueOf(o2.Properties.getOrDefault("WebOrder", "0"));
+                        }
+                        
+                        return o2Order.compareTo(o1Order);
+                    }
+                });
+            }
+            
+            for(nService service : services) {
+                nServiceStateRecord record = new nServiceStateRecord();
+                record.State = nServiceState.FETCH_ERROR;
+                record.UpdatedAt = new Date();
+                 
+                boolean draw = false;
+                       
+                if(states.containsKey(service.Name)) {
+                     record = states.get(service.Name);
+                }
                 
                 if(service != null) {
-                    String item = buildItemHtml(tplServiceItem, service, record);                    
-                    rpWriter.append(item);
+                    if(service.Properties != null && service.Properties.containsKey("ShowInWeb")) {
+                        if(service.Properties.get("ShowInWeb").equalsIgnoreCase("1")) {
+                            draw = true;
+                        }
+                    }
+                    else 
+                    {
+                        draw = true;
+                    }
+                    
+                    if(draw)
+                    {
+                        String item = buildItemHtml(tplServiceItem, service, record);                    
+                        rpWriter.append(item);
+                    }
                 }
             }
+
         } else {
             rpWriter.write(nConfigHelper.getDisplayLanguage().getProperty("REQUEST_FAILED"));
         }

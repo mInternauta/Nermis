@@ -37,66 +37,75 @@ public class nWatcherJob implements Job {
 
     @Override
     public void execute(JobExecutionContext jec) throws JobExecutionException {
-        JobDataMap data = jec.getJobDetail().getJobDataMap();
-        
-        // -
-        nController.CurrentLogger.log(Level.INFO, "Starting job: {0}", jec.getFireInstanceId());
-        
-        // - Arguments for the Job
-        String watcherName = data.getString("Watcher");
-        String serviceName = data.getString("Service");
-        
-        // -
-        nController.CurrentLogger.log(Level.INFO, "Fetched job information: {0}-{1}", new Object[]{serviceName, watcherName});
-        
-        // - Fetch the Watcher and the Service
-        nService service = null;
-        nServiceWatcher watcher = null;
-        
-        //---
-        for(nService cService :  nStorage.getInstance().Services) {
-            if(cService.Name.equalsIgnoreCase(serviceName)) {
-                service = cService;
-                break;
-            }
-        }
-        
-        //---
-        for(nServiceWatcher cWatcher : nController.getRegistredWatchers()) {
-            if(cWatcher.getName().equalsIgnoreCase(watcherName)) {
-                watcher = cWatcher;
-                break;
-            }
-        }
-        
-        // - Check the fetched data
-        if(service != null && watcher != null) 
+        try 
         {
-            nController.CurrentLogger.log(Level.INFO, "Executing the Watcher for {0}", serviceName);
-            
-            if(watcher.validate(service)) {
-                // Executes the Watcher
-                nServiceResults results = watcher.execute(service);
-                
-                // Print the result 
-                if(results.Message != null && results.Message.isEmpty() == false) {
-                    nController.CurrentLogger.log(Level.INFO, "Watcher returned: {0}->{1}", new Object[]{serviceName, results.Message});
+            JobDataMap data = jec.getJobDetail().getJobDataMap();       
+
+            // -
+            nController.CurrentLogger.log(Level.INFO, "Starting job: {0}", jec.getFireInstanceId());
+
+            // - Arguments for the Job
+            String watcherName = data.getString("Watcher");
+            String serviceName = data.getString("Service");
+
+            // -
+            nController.CurrentLogger.log(Level.INFO, "Fetched job information: {0}-{1}", new Object[]{serviceName, watcherName});
+
+            // - Fetch the Watcher and the Service
+            nService service = null;
+            nServiceWatcher watcher = null;
+
+            //---
+            for(nService cService :  nStorage.getInstance().Services) {
+                if(cService.Name.equalsIgnoreCase(serviceName)) {
+                    service = cService;
+                    break;
                 }
-                
-                // Save the Result in the States Table
-                nServiceStateRecord record = new nServiceStateRecord();
-                record.State = results.State;
-                record.UpdatedAt = new Date();
-                
-                 nStorage.getInstance().States.put(serviceName, record);
-                 nStorage.getInstance().saveStates(nStorage.getInstance().States);
-            } else {
-                nController.CurrentLogger.log(Level.SEVERE, "Invalid service settings for the current watcher: {0}", serviceName);
             }
-        }
-        else 
+
+            //---
+            for(nServiceWatcher cWatcher : nController.getRegistredWatchers()) {
+                if(cWatcher.getName().equalsIgnoreCase(watcherName)) {
+                    watcher = cWatcher;
+                    break;
+                }
+            }
+
+            // - Check the fetched data
+            if(service != null && watcher != null) 
+            {
+                nController.CurrentLogger.log(Level.INFO, "Executing the Watcher for {0}", serviceName);
+
+                if(watcher.validate(service)) {
+                    // Executes the Watcher
+                    nServiceResults results = watcher.execute(service);
+
+                    // Print the result 
+                    if(results.Message != null && results.Message.isEmpty() == false) {
+                        nController.CurrentLogger.log(Level.INFO, "Watcher returned: {0}->{1}", new Object[]{serviceName, results.Message});
+                    }
+
+                    // Save the Result in the States Table
+                    nServiceStateRecord record = new nServiceStateRecord();
+                    record.State = results.State;
+                    record.UpdatedAt = new Date();
+
+                     nStorage.getInstance().States.put(serviceName, record);
+                     nStorage.getInstance().saveStates(nStorage.getInstance().States);
+
+                     nController.CurrentLogger.log(Level.INFO, "Executed the Watcher for {0}", serviceName);
+                } else {
+                    nController.CurrentLogger.log(Level.SEVERE, "Invalid service settings for the current watcher: {0}", serviceName);
+                }
+            }
+            else 
+            {
+                nController.CurrentLogger.log(Level.SEVERE, "Cant fetch service information: {0}", serviceName);
+            }
+        } 
+        catch(Exception ex)
         {
-            nController.CurrentLogger.log(Level.SEVERE, "Cant fetch service information: {0}", serviceName);
+            nController.CurrentLogger.log(Level.INFO, "Error: {0}", ex.toString());
         }
     }
     
