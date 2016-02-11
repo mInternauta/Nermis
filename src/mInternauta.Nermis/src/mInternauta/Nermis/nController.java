@@ -133,6 +133,7 @@ public class nController {
         try {
             // Setup the Logger
             CurrentLogger.setLevel(Level.ALL);
+            CurrentLogger.setUseParentHandlers(false);
             CurrentLogger.addHandler(new ConsoleHandler());
             FileHandler fileLog = new FileHandler(nResourceHelper.BuildName("Logs", "Global").getAbsolutePath(), 10048, 10);
             fileLog.setFormatter(new SimpleFormatter());
