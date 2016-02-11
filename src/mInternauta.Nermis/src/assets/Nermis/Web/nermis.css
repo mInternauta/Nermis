@@ -1,0 +1,127 @@
+/*
+Copyright (C) 2015 mInternauta
+
+This program is free software; you can redistribute it and/or
+modify it under the terms of the GNU General Public License
+as published by the Free Software Foundation; either version 2
+of the License, or (at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program; if not, write to the Free Software
+Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+
+*/
+/* 
+    Created on : 05/02/2016, 10:36:39
+    Author     : mInternauta
+*/
+* {
+	margin: 0;
+    padding: 0;
+    font-family: monospace;
+    letter-spacing: -0.5px;
+    line-height: 110%;
+
+}
+
+#Home {
+    display: block;
+    width: 256px;
+    margin: 5px auto;	
+	padding-bottom: 8px;
+	border-bottom: 4px solid gray;
+	border-radius: 4px;
+}
+
+#Home img {
+	margin-bottom: 5px;
+}
+
+#ServiceStatus {
+    display: block;
+    width: 728px;
+    margin: 5px auto;	
+	padding-right: 8px;
+}
+
+#ServiceStatus #Title {
+    text-align: center;
+    font-size: 22px;
+    padding: 16px;
+    padding-bottom: 20px;
+    border-bottom: 2px solid #6DB48B;
+    margin-bottom: 20px;
+}
+
+#ServiceStatus #Footer {
+    text-align: center;
+    font-size: 11px;
+    margin-top: 24px;
+	
+}
+
+#ServiceStatus #Footer img {
+    height: 20px;
+}
+
+.Service {
+        padding: 5px;
+    border-radius: 3px;
+    height: 72px;
+    box-shadow: rgba(128, 128, 128, 0.55) 0px 5px 9px -4px;
+    margin-bottom: 5px;
+}
+
+.Service .Name {
+    margin: 2px;
+    font-size: 22px;
+}
+
+.Service .UpdatedAt {
+    margin: 5px;
+    margin-top: 0px;
+    display: block;
+    float: right;
+    font-size: 11px;
+}
+
+.Service .State {
+    margin: 5px;
+	margin-top: 12px;
+    text-align: right;
+    font-size: 14px;
+	display: block;
+}
+
+#ServiceStatus div[class$="ONLINE"] {    
+    border: 1px solid #239B56;
+    border-top: 8px solid #239B56;
+}
+
+#ServiceStatus div[class$="OFFLINE"] {    
+    border: 1px solid #943126;
+    border-top: 8px solid #943126;
+}
+
+.Service span[class$="ONLINE"] {    
+   color: #1D8348
+}
+
+.Service span[class$="OFFLINE"] {    
+    color: #641E16
+}
+
+.Service[class$="OFFLINE"] a {
+	text-decoration: none;	
+	color: #641E16
+}
+
+.Service[class$="ONLINE"] a {
+	text-decoration: none;	
+	color: #1D8348
+}

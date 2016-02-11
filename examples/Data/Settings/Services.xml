@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<java version="1.8.0_65" class="java.beans.XMLDecoder">
+ <object class="mInternauta.Nermis.Persistence.nServiceContainer">
+  <void property="myData">
+   <object class="java.util.ArrayList">
+    <void method="add">
+     <object class="mInternauta.Nermis.Core.nService" id="nService0">
+      <void class="mInternauta.Nermis.Core.nService" method="getField">
+       <string>Name</string>
+       <void method="set">
+        <object idref="nService0"/>
+        <string>Test</string>
+       </void>
+      </void>
+      <void class="mInternauta.Nermis.Core.nService" method="getField">
+       <string>Description</string>
+       <void method="set">
+        <object idref="nService0"/>
+        <string>Test</string>
+       </void>
+      </void>
+      <void class="mInternauta.Nermis.Core.nService" method="getField">
+       <string>RefUrl</string>
+       <void method="set">
+        <object idref="nService0"/>
+        <string>myurl</string>
+       </void>
+      </void>
+      <void class="mInternauta.Nermis.Core.nService" method="getField">
+       <string>RepeatEvery</string>
+       <void method="set">
+        <object idref="nService0"/>
+        <int>60</int>
+       </void>
+      </void>
+      <void class="mInternauta.Nermis.Core.nService" method="getField">
+       <string>Watcher</string>
+       <void method="set">
+        <object idref="nService0"/>
+        <string>Web</string>
+       </void>
+      </void>
+      <void class="mInternauta.Nermis.Core.nService" method="getField">
+       <string>Properties</string>
+       <void method="set">
+        <object idref="nService0"/>
+        <object class="java.util.HashMap">
+         <void method="put">
+          <string>Method</string>
+          <string>GET</string>
+         </void>
+         <void method="put">
+          <string>Protocol</string>
+          <string>http</string>
+         </void>
+         <void method="put">
+          <string>Url</string>
+          <string>www.google.com.br</string>
+         </void>
+        </object>
+       </void>
+      </void>
+     </object>
+    </void>
+   </object>
+  </void>
+ </object>
+</java>

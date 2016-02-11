@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<java version="1.8.0_65" class="java.beans.XMLDecoder">
+ <object class="mInternauta.Nermis.Configs.nConfigContainer">
+  <void property="myData">
+   <object class="mInternauta.Nermis.Configs.nConfiguration" id="nConfiguration0">
+    <void class="mInternauta.Nermis.Configs.nConfiguration" method="getField">
+     <string>WebServerPort</string>
+     <void method="set">
+      <object idref="nConfiguration0"/>
+      <int>5000</int>
+     </void>
+    </void>
+    <void class="mInternauta.Nermis.Configs.nConfiguration" method="getField">
+     <string>Language</string>
+     <void method="set">
+      <object idref="nConfiguration0"/>
+      <string>english</string>
+     </void>
+    </void>
+    <void class="mInternauta.Nermis.Configs.nConfiguration" method="getField">
+     <string>WatchersJars</string>
+     <void method="set">
+      <object idref="nConfiguration0"/>
+      <object class="java.util.HashMap">
+       <void method="put">
+        <string>Builtin Watchers</string>
+        <string>./lib/mInternauta.Nermis.Builtin</string>
+       </void>
+      </object>
+     </void>
+    </void>
+   </object>
+  </void>
+ </object>
+</java>
