@@ -148,7 +148,9 @@ public class nStorage {
     {         
         nServiceContainer container =  new nServiceContainer();
         container.setMyData(services);
-            
+        
+        this.Services = services;
+        
         saveContainer(container, "Services", "Settings");
     }
     
@@ -179,6 +181,8 @@ public class nStorage {
     {
         nStatesContainer container =  new nStatesContainer();
         container.setMyData(states);
+        
+        this.States = states;
             
         saveContainer(container, "States", "Current");
     }
