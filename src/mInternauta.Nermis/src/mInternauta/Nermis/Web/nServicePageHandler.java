@@ -136,6 +136,7 @@ public class nServicePageHandler extends AbstractHandler {
         
         if(service.RefUrl != null && service.RefUrl.isEmpty() == false) {
             description = "<a href=\"" + service.RefUrl + "\" target=\"_blank\">" + description + "</a>";
+            description += "<div class=\"REFURL\">" + service.RefUrl + "</div>";
         }
         
         item = item.replace("{SERVICE_DESCRIPTION}", description);

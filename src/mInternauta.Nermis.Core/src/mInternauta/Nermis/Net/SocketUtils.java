@@ -2,7 +2,9 @@ package mInternauta.Nermis.Net;
 
 import java.net.DatagramSocket;
 import java.net.InetAddress;
+import java.net.InetSocketAddress;
 import java.net.Socket;
+import java.net.SocketAddress;
 
 
 
@@ -44,7 +46,11 @@ public final class SocketUtils {
         boolean results = false;
         
         try {
-            Socket socket = new Socket(hostname, port);
+            SocketAddress sockaddr = new InetSocketAddress(InetAddress.getByName(hostname), port);
+            Socket socket = new Socket();
+            
+            socket.connect(sockaddr, 1000);
+            
             if(socket.isConnected()) {
                 results = true;
                 socket.close();
