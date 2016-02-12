@@ -24,7 +24,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
 import java.util.logging.Level;
-import mInternauta.Nermis.nResourceHelper;
+import mInternauta.Nermis.Utils.nResourceHelper;
 import mInternauta.Nermis.nController;
 
 /**

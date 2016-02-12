@@ -22,7 +22,7 @@ import java.io.OutputStream;
 import java.util.ArrayList;
 import java.io.InputStream;
 import java.util.logging.Level;
-import mInternauta.Nermis.nResourceHelper;
+import mInternauta.Nermis.Utils.nResourceHelper;
 import mInternauta.Nermis.Core.nService;
 import mInternauta.Nermis.Core.nServiceStateTable;
 import mInternauta.Nermis.nController;
@@ -81,7 +81,7 @@ public class nStorage {
      * @param container The container
      * @param name
      * @param kind 
-     * @see mInternauta.Nermis.nResourceHelper
+     * @see mInternauta.Nermis.Utils.nResourceHelper
      */
     public <TContainer extends nBaseContainer> void saveContainer(TContainer container, String name, String kind) {
         try {
@@ -102,7 +102,7 @@ public class nStorage {
      * @param name
      * @param kind
      * @return The container object
-     * @see mInternauta.Nermis.nResourceHelper
+     * @see mInternauta.Nermis.Utils.nResourceHelper
      */
     public  <TContainer extends nBaseContainer> TContainer loadContainer(String name, String kind)  
     {

@@ -26,7 +26,6 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.Locale;
-import java.util.Map.Entry;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -70,25 +69,7 @@ public class nServicePageHandler extends AbstractHandler {
             ArrayList<nService> services = new ArrayList<>();
             services = nServiceHelper.AllServices();
             
-            if(services != null && services.size() > 0) {
-                 Collections.sort(services, new Comparator<nService>() {
-                    @Override
-                    public int compare(nService o1, nService o2) {
-                        Integer o1Order = 0;
-                        Integer o2Order = 0;
-                        
-                        if(o1.Properties != null) {
-                            o1Order = Integer.valueOf(o1.Properties.getOrDefault("WebOrder", "0"));
-                        }
-                        
-                        if(o1.Properties != null) {
-                            o2Order = Integer.valueOf(o2.Properties.getOrDefault("WebOrder", "0"));
-                        }
-                        
-                        return o2Order.compareTo(o1Order);
-                    }
-                });
-            }
+            sortServices(services);
             
             for(nService service : services) {
                 nServiceStateRecord record = new nServiceStateRecord();
@@ -124,6 +105,28 @@ public class nServicePageHandler extends AbstractHandler {
             rpWriter.write(nConfigHelper.getDisplayLanguage().getProperty("REQUEST_FAILED"));
         }
         return rpWriter;
+    }
+
+    private void sortServices(ArrayList<nService> services) {
+        if(services != null && services.size() > 0) {
+            Collections.sort(services, new Comparator<nService>() {
+                @Override
+                public int compare(nService o1, nService o2) {
+                    Integer o1Order = 0;
+                    Integer o2Order = 0;
+                    
+                    if(o1.Properties != null) {
+                        o1Order = Integer.valueOf(o1.Properties.getOrDefault("WebOrder", "0"));
+                    }
+                    
+                    if(o1.Properties != null) {
+                        o2Order = Integer.valueOf(o2.Properties.getOrDefault("WebOrder", "0"));
+                    }
+                    
+                    return o2Order.compareTo(o1Order);
+                }
+            });
+        }
     }
 
     private String buildItemHtml(String tplServiceItem, nService service, nServiceStateRecord record) {

@@ -18,6 +18,8 @@
  */
 package minternauta.nermis.deamon.CLI;
 
+import java.io.File;
+import java.util.HashMap;
 import mInternauta.Nermis.Configs.nConfigHelper;
 import mInternauta.Nermis.Configs.nConfiguration;
 import org.apache.commons.cli.CommandLine;
@@ -44,6 +46,14 @@ public class CLISettings implements ICLICommand {
                 .build());
         
         settings.addOption(
+                Option.builder("installjar")
+                .hasArgs()
+                .numberOfArgs(2)
+                .valueSeparator()
+                .desc("Install a jar file to the Nermis")
+                .build());
+        
+        settings.addOption(
                 Option.builder("view")
                 .desc("Show the current settings")
                 .build());
@@ -53,11 +63,15 @@ public class CLISettings implements ICLICommand {
 
     @Override
     public void Execute(CommandLine cmd) {
-        viewCommand(cmd);
-        
-        if(cmd.hasOption("set")) {                    
+        viewCommand(cmd);        
+        setCommand(cmd);  
+        installjarCommand(cmd);
+    }
+
+    private void setCommand(CommandLine cmd) throws NumberFormatException {
+        if(cmd.hasOption("set")) {
             String propertyName = cmd.getOptionValues("set")[0];
-            String propertyValue = cmd.getOptionValues("set")[1];                
+            String propertyValue = cmd.getOptionValues("set")[1];
             propertyValue = propertyValue.replace("\\0", " ");                
             nConfiguration cfg = nConfigHelper.getConfiguration();
             
@@ -67,6 +81,29 @@ public class CLISettings implements ICLICommand {
             
             if(propertyName.equalsIgnoreCase("Language")) {
                 cfg.Language = propertyValue;
+            }
+            
+            nConfigHelper.Save(cfg);
+        }
+    }
+    
+     private void installjarCommand(CommandLine cmd) throws NumberFormatException {
+        if(cmd.hasOption("installjar")) {
+            String name = cmd.getOptionValues("installjar")[0];
+            String jar = cmd.getOptionValues("installjar")[1];
+            jar = jar.replace("\\0", " ");                
+            nConfiguration cfg = nConfigHelper.getConfiguration();
+            
+            File file = new File(jar);
+            
+            if(file.exists()) {
+                if(cfg.WatchersJars == null) {
+                    cfg.WatchersJars = new HashMap<>();
+                }
+                cfg.WatchersJars.put(name.trim(), jar);
+                System.out.println("Jar included to the Nermis, restart to take effect.");
+            } else {
+                System.out.println("Cant find the jar file: " + file.getAbsolutePath());
             }
             
             nConfigHelper.Save(cfg);

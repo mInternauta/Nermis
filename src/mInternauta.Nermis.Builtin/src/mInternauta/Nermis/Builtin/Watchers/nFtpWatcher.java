@@ -78,7 +78,7 @@ public class nFtpWatcher implements nServiceWatcher {
 
     @Override
     public boolean validate(nService service) {
-           boolean isValid = false;
+        boolean isValid = false;
         
         if(service != null && service.Properties != null) {
             isValid = service.Properties.containsKey("Hostname") &&

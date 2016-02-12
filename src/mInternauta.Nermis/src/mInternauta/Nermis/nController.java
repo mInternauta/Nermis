@@ -18,6 +18,7 @@
  */
 package mInternauta.Nermis;
 
+import mInternauta.Nermis.Utils.nResourceHelper;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
@@ -38,6 +39,7 @@ import mInternauta.Nermis.Core.nService;
 import mInternauta.Nermis.Core.nServiceWatcher;
 import mInternauta.Nermis.Configs.nConfigHelper;
 import mInternauta.Nermis.Configs.nConfiguration;
+import mInternauta.Nermis.Utils.nJarManager;
 import mInternauta.Nermis.Web.nWebServer;
 import org.quartz.JobBuilder;
 import org.quartz.JobDetail;
@@ -74,7 +76,7 @@ public class nController {
         // Load all configured watchers
         for(Entry<String, String> entry : cfg.WatchersJars.entrySet()) {
             CurrentLogger.log(Level.INFO, "Loading: " + entry.getKey());
-            LoadWatchersFromJar(entry.getValue());
+            Watchers.addAll(nJarManager.LoadWatchersFromJar(entry.getValue()));
         }
     }
 
@@ -84,37 +86,6 @@ public class nController {
             cfg.WatchersJars = cfg2.WatchersJars;
             nConfigHelper.Save(cfg);
         }
-    }
-    
-    public static void LoadWatchersFromJar(String pathToJar) {
-        try {
-            File filePath = new File(pathToJar + ".jar");
-            JarFile jarFile = new JarFile(filePath.getAbsolutePath());
-            Enumeration e = jarFile.entries();
-            
-            URL[] urls = { new URL("jar:file:" + filePath.getAbsolutePath() + "!/") };
-            URLClassLoader cl = URLClassLoader.newInstance(urls);
-            
-            while (e.hasMoreElements()) {
-                JarEntry je = (JarEntry) e.nextElement();
-                if(je.isDirectory() || !je.getName().endsWith(".class")){
-                    continue;
-                }
-                // -6 because of .class
-                String className = je.getName().substring(0,je.getName().length()-6);
-                className = className.replace('/', '.');
-                Class c = cl.loadClass(className);         
-                
-                Object jObject = c.newInstance();
-                
-                if(nServiceWatcher.class.isInstance(jObject)) {
-                    nServiceWatcher _cInstance = (nServiceWatcher)jObject;
-                    Watchers.add(_cInstance); 
-                }
-            }
-        } catch (IOException | ClassNotFoundException | InstantiationException | IllegalAccessException ex) {
-            CurrentLogger.log(Level.SEVERE, null, ex);
-        } 
     }
     
     /**

@@ -50,10 +50,8 @@ Copy and install the deamon script
 Check for Releases in Github page.
 
 ## Thanks and Licenses
-Thanks for Apache Commons with Commons IO, NET and CLI Library
-
-Thanks for MySQL Team with MySQL Connector for Java
-
-Thanks for Quartz Scheduler Team with Quarts Scheduler 
-
-Thanks for Jetty Team with Jetty WebServer
+* Thanks to Apache for the Commons IO, NET and CLI Library
+* Thanks to MySQL Team for the MySQL Connector for Java
+* Thanks to Quartz Scheduler Team for the Quarts Scheduler 
+* Thanks to Jetty Team for the Jetty WebServer
+* Thanks to LuaJ Team for the LuaJ 

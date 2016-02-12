@@ -21,11 +21,10 @@ package mInternauta.Nermis.Web;
 import java.util.logging.Level;
 import mInternauta.Nermis.Configs.nConfigHelper;
 import mInternauta.Nermis.nController;
-import mInternauta.Nermis.nResourceHelper;
+import mInternauta.Nermis.Utils.nResourceHelper;
 import org.eclipse.jetty.server.Handler;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.handler.ContextHandler;
-import org.eclipse.jetty.server.handler.ResourceHandler;
 
 /**
  * Nermis Built-in Web Server
@@ -63,6 +62,7 @@ public class nWebServer {
             nResourceHelper.CopyEmbedded("/assets/Nermis/Web/nermis.css", this.webServerPath + "/nermis.css");
             nResourceHelper.CopyEmbedded("/assets/Nermis/Web/Icon.png", this.webServerPath + "/Icon.png");
             nResourceHelper.CopyEmbedded("/assets/Nermis/Web/index.html", this.webServerPath + "/index.html");
+            nResourceHelper.CopyEmbedded("/assets/Nermis/Web/example.lua", this.webServerPath + "/example.lua");
             
             int webserverPort = nConfigHelper.getConfiguration().WebServerPort;
             
@@ -83,25 +83,26 @@ public class nWebServer {
     private ContextHandler setupHandlers() {        
         ContextHandler ctxServer = new ContextHandler();
         ctxServer.setContextPath("/");
-        
-        // Setup all the Handlers
-        nJettyContextHandlerCollection handlers = new nJettyContextHandlerCollection();
-                
-        //-
+  
+        /**
         ContextHandler ctxResources = new ContextHandler("/");
         ResourceHandler resHandler = new ResourceHandler();
         resHandler.setResourceBase(webServerPath);
         resHandler.setDirectoriesListed(true);
         ctxResources.setHandler(resHandler);
-        
+
         // Service Status Page
         ContextHandler servicePage = new ContextHandler();
         servicePage.setContextPath("/status.do");
         servicePage.setHandler(new nServicePageHandler());
+                
+        */                
+        nWebDefaultHandler mainHandler = new nWebDefaultHandler(this.webServerPath);
+        mainHandler.addMapping("/status.do", new nServicePageHandler());        
         
-        //-
-        handlers.setHandlers(new Handler[] {ctxResources, servicePage});
-        ctxServer.setHandler(handlers);
+        ctxServer.setWelcomeFiles(new String[] {"index.html"});
+        ctxServer.setHandler(mainHandler);
+        
         
         return ctxServer;
     }

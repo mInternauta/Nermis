@@ -23,7 +23,7 @@ import java.io.OutputStream;
 import java.io.StringWriter;
 import java.nio.charset.Charset;
 import java.util.logging.Level;
-import mInternauta.Nermis.nResourceHelper;
+import mInternauta.Nermis.Utils.nResourceHelper;
 import mInternauta.Nermis.nController;
 import org.apache.commons.io.IOUtils;
 
