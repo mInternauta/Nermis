@@ -18,34 +18,30 @@
  */
 package mInternauta.Nermis.Lua;
 
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import mInternauta.Nermis.nController;
+import java.io.File;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import mInternauta.Nermis.Web.nWebContext;
 import org.luaj.vm2.LuaValue;
-import org.luaj.vm2.lib.OneArgFunction;
+import org.luaj.vm2.lib.TwoArgFunction;
 import org.luaj.vm2.lib.jse.CoerceJavaToLua;
+import org.luaj.vm2.lib.jse.CoerceLuaToJava;
 
 /**
  * Implements the Create Instance for Lua
  */
-public class nLuaCreateInstanceFunc extends OneArgFunction {
-
+public class nLuaGetFileFunc extends TwoArgFunction {
+    
     @Override
-    public LuaValue call(LuaValue lv) {
-        String typeName = lv.tojstring();
+    public LuaValue call(LuaValue context, LuaValue fileNameLV) {
+        nWebContext webContext = (nWebContext) CoerceLuaToJava.coerce(context, nWebContext.class);        
+        String rootPath = new File(webContext.Target).getParent();
+        
+        String fileName = fileNameLV.tojstring();
         LuaValue finalValue = null;
         
-        try
-        {
-            Class clazz = Class.forName(typeName);
-            if(clazz != null) {
-                Object instance = clazz.newInstance();
-                finalValue = CoerceJavaToLua.coerce(instance);
-            }
-        } 
-        catch (ClassNotFoundException | InstantiationException | IllegalAccessException ex) {
-            nController.CurrentLogger.log(Level.WARNING, "Error in the Lua.createInstance: " + ex.getMessage());
-        }
+        Path path = Paths.get(rootPath, fileName);
+        finalValue = CoerceJavaToLua.coerce(path.toFile());
         
         return finalValue;
     }

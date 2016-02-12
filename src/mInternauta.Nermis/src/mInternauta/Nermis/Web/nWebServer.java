@@ -22,7 +22,6 @@ import java.util.logging.Level;
 import mInternauta.Nermis.Configs.nConfigHelper;
 import mInternauta.Nermis.nController;
 import mInternauta.Nermis.Utils.nResourceHelper;
-import org.eclipse.jetty.server.Handler;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.handler.ContextHandler;
 
@@ -62,7 +61,7 @@ public class nWebServer {
             nResourceHelper.CopyEmbedded("/assets/Nermis/Web/nermis.css", this.webServerPath + "/nermis.css");
             nResourceHelper.CopyEmbedded("/assets/Nermis/Web/Icon.png", this.webServerPath + "/Icon.png");
             nResourceHelper.CopyEmbedded("/assets/Nermis/Web/index.html", this.webServerPath + "/index.html");
-            nResourceHelper.CopyEmbedded("/assets/Nermis/Web/example.lua", this.webServerPath + "/example.lua");
+            nResourceHelper.CopyEmbedded("/assets/Nermis/Web/favicon.ico", this.webServerPath + "/favicon.ico");
             
             int webserverPort = nConfigHelper.getConfiguration().WebServerPort;
             
@@ -83,20 +82,7 @@ public class nWebServer {
     private ContextHandler setupHandlers() {        
         ContextHandler ctxServer = new ContextHandler();
         ctxServer.setContextPath("/");
-  
-        /**
-        ContextHandler ctxResources = new ContextHandler("/");
-        ResourceHandler resHandler = new ResourceHandler();
-        resHandler.setResourceBase(webServerPath);
-        resHandler.setDirectoriesListed(true);
-        ctxResources.setHandler(resHandler);
-
-        // Service Status Page
-        ContextHandler servicePage = new ContextHandler();
-        servicePage.setContextPath("/status.do");
-        servicePage.setHandler(new nServicePageHandler());
-                
-        */                
+               
         nWebDefaultHandler mainHandler = new nWebDefaultHandler(this.webServerPath);
         mainHandler.addMapping("/status.do", new nServicePageHandler());        
         

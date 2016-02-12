@@ -18,7 +18,7 @@
  */
 package mInternauta.Nermis.Web;
 
-import mInternauta.Nermis.Lua.nLuaCreateInstanceFunc;
+import mInternauta.Nermis.Lua.nLuaGetFileFunc;
 import mInternauta.Nermis.Lua.nLuaGetWebContextFunc;
 import java.io.File;
 import java.io.FileInputStream;
@@ -127,7 +127,7 @@ public class nWebDefaultHandler extends AbstractHandler {
               // Create the global runtime
               Globals globals = JsePlatform.standardGlobals();
               globals.set("getWebContext", new nLuaGetWebContextFunc(Context));
-              globals.set("createInstance", new nLuaCreateInstanceFunc());
+              globals.set("getFile", new nLuaGetFileFunc());
 
               // Load the file
               LuaValue script = globals.loadfile(path);
