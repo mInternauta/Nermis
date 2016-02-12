@@ -59,7 +59,7 @@ public class nWebServer {
             
             // Copy all embedded resources to the WebServer Path
             nResourceHelper.CopyEmbedded("/assets/Nermis/Web/nermis.css", this.webServerPath + "/nermis.css");
-            nResourceHelper.CopyEmbedded("/assets/Nermis/Web/Icon.png", this.webServerPath + "/Icon.png");
+            nResourceHelper.CopyEmbedded("/assets/Nermis/Web/Icon.png", this.webServerPath + "/icon.png");
             nResourceHelper.CopyEmbedded("/assets/Nermis/Web/index.html", this.webServerPath + "/index.html");
             nResourceHelper.CopyEmbedded("/assets/Nermis/Web/favicon.ico", this.webServerPath + "/favicon.ico");
             

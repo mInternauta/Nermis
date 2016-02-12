@@ -19,16 +19,10 @@
 package mInternauta.Nermis;
 
 import mInternauta.Nermis.Utils.nResourceHelper;
-import java.io.File;
 import java.io.IOException;
-import java.net.URL;
-import java.net.URLClassLoader;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.Enumeration;
 import java.util.Map.Entry;
-import java.util.jar.JarEntry;
-import java.util.jar.JarFile;
 import java.util.logging.ConsoleHandler;
 import java.util.logging.FileHandler;
 import java.util.logging.Level;
@@ -106,7 +100,7 @@ public class nController {
             CurrentLogger.setLevel(Level.ALL);
             CurrentLogger.setUseParentHandlers(false);
             CurrentLogger.addHandler(new ConsoleHandler());
-            FileHandler fileLog = new FileHandler(nResourceHelper.BuildName("Logs", "Global").getAbsolutePath(), 10048, 10);
+            FileHandler fileLog = new FileHandler(nResourceHelper.BuildName("Logs", "Global").getAbsolutePath(), 1000024, 5);
             fileLog.setFormatter(new SimpleFormatter());
             CurrentLogger.addHandler(fileLog);
             

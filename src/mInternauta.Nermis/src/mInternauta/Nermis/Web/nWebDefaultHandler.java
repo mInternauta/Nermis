@@ -86,7 +86,7 @@ public class nWebDefaultHandler extends AbstractHandler {
                 sendResource(targetPath, resp);
             }
         }
-        catch(IOException | ServletException exp)
+        catch(Exception exp)
         {
             nController.CurrentLogger.log(Level.SEVERE, "Web Server Error: ");
             nController.CurrentLogger.log(Level.SEVERE, exp.toString());
