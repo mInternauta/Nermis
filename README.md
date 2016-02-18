@@ -49,6 +49,10 @@ Copy and install the deamon script
 ## How do i Download?
 Check for Releases in Github page.
 
+## Windows Service?
+Check for App2Service to make the Nermis or DeepInspector a Windows Service:
+https://github.com/mInternauta/App2Service
+
 ## Thanks and Licenses
 * Thanks to Apache for the Commons IO, NET and CLI Library
 * Thanks to MySQL Team for the MySQL Connector for Java
