@@ -32,7 +32,6 @@ import mInternauta.Nermis.Notifiers.nConsoleNotifier;
 
 /**
  * Current Application Environment
- * @author marcelo
  */
 public final class nApplication {    
     /**

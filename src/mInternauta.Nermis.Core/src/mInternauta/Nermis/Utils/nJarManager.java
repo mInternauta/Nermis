@@ -20,6 +20,7 @@ package mInternauta.Nermis.Utils;
 
 import java.io.File;
 import java.io.IOException;
+import java.lang.reflect.ParameterizedType;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.ArrayList;
@@ -37,7 +38,7 @@ import static mInternauta.Nermis.Utils.nApplication.CurrentLogger;
  */
 public class nJarManager {
     
-    private static <T> ArrayList<T> seekJar(String pathToJar) {
+    private static <T> ArrayList<T> seekJar(String pathToJar, Class baseClass) {
         ArrayList<T> list = new ArrayList<>();
         
         try {
@@ -58,8 +59,8 @@ public class nJarManager {
                 className = className.replace('/', '.');
                 Class c = cl.loadClass(className);                         
                 Class[] interfaces = c.getInterfaces();
-                for(Class it : interfaces) {                    
-                    if(it.equals(list.getClass().getGenericSuperclass())) {
+                for(Class it : interfaces) {     
+                    if(it.equals(baseClass)) {
                         T obj = (T)c.newInstance();
                         list.add(obj);
                         break;
@@ -81,7 +82,7 @@ public class nJarManager {
     public static ArrayList<nServiceWatcher> LoadWatchersFromJar(String pathToJar) {
         ArrayList<nServiceWatcher> Watchers = new ArrayList<>();
         
-        Watchers = seekJar(pathToJar);
+        Watchers = seekJar(pathToJar, nServiceWatcher.class);
         
         return Watchers;
     }
@@ -89,7 +90,7 @@ public class nJarManager {
     public static ArrayList<nAbstractNotifier> LoadNotifiersFromJar(String pathToJar) {
         ArrayList<nAbstractNotifier> notifiers = new ArrayList<>();
         
-        notifiers = seekJar(pathToJar);
+        notifiers = seekJar(pathToJar, nAbstractNotifier.class);
         
         return notifiers;
     }

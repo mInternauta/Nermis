@@ -25,7 +25,6 @@ import org.luaj.vm2.lib.jse.CoerceJavaToLua;
 
 /**
  * Implements a Function to get the current Web Context for a Lua Script
- * @author marcelo
  */
 public class nLuaGetWebContextFunc extends ZeroArgFunction {
     private final nWebContext myContext;

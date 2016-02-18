@@ -21,11 +21,9 @@ package mInternauta.Nermis.Notifiers;
 import java.util.logging.Level;
 import mInternauta.Nermis.Core.nService;
 import static mInternauta.Nermis.Utils.nApplication.CurrentLogger;
-import sun.util.logging.PlatformLogger;
 
 /**
  * Simple Console Notifier
- * @author marcelo
  */
 public class nConsoleNotifier extends nAbstractNotifier {
 

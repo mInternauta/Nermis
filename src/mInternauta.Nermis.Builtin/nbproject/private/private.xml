@@ -5,8 +5,6 @@
         <group>
             <file>file:/D:/Marcelo/Projetos/Nermis/src/mInternauta.Nermis.Builtin/src/mInternauta/Nermis/Builtin/Notifiers/nEmailNotifier.java</file>
         </group>
-        <group name="Nermis">
-            <file>file:/D:/Marcelo/Projetos/Nermis/src/mInternauta.Nermis.Builtin/src/mInternauta/Nermis/Builtin/Notifiers/nEmailNotifier.java</file>
-        </group>
+        <group name="Nermis"/>
     </open-files>
 </project-private>

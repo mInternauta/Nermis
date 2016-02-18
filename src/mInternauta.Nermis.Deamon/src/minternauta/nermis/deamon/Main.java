@@ -18,7 +18,6 @@
  */
 package minternauta.nermis.deamon;
 
-import java.util.Arrays;
 import mInternauta.Nermis.nController;
 
 public class Main {    
