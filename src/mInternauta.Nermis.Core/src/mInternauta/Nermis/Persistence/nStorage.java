@@ -25,7 +25,7 @@ import java.util.logging.Level;
 import mInternauta.Nermis.Utils.nResourceHelper;
 import mInternauta.Nermis.Core.nService;
 import mInternauta.Nermis.Core.nServiceStateTable;
-import mInternauta.Nermis.nController;
+import static mInternauta.Nermis.Utils.nApplication.CurrentLogger;
 
 /**
  * Manages the storage main containers.
@@ -92,7 +92,7 @@ public class nStorage {
             stream.flush();
             stream.close();
         } catch (Exception ex) {
-            nController.CurrentLogger.log(Level.SEVERE, null, ex);
+            CurrentLogger.log(Level.SEVERE, null, ex);
         }
     }
     

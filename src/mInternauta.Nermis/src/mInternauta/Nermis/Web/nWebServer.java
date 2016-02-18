@@ -20,10 +20,10 @@ package mInternauta.Nermis.Web;
 
 import java.util.logging.Level;
 import mInternauta.Nermis.Configs.nConfigHelper;
-import mInternauta.Nermis.nController;
 import mInternauta.Nermis.Utils.nResourceHelper;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.handler.ContextHandler;
+import static mInternauta.Nermis.Utils.nApplication.CurrentLogger;
 
 /**
  * Nermis Built-in Web Server
@@ -38,12 +38,12 @@ public class nWebServer {
     public void Stop() 
     {
         try {
-            nController.CurrentLogger.log(Level.INFO, "Stopping Nermis Builtin Web Server...");
+            CurrentLogger.log(Level.INFO, "Stopping Nermis Builtin Web Server...");
             if(server != null) {
                 server.stop();
             }
         } catch (Exception ex) {
-            nController.CurrentLogger.log(Level.SEVERE, null, ex);
+            CurrentLogger.log(Level.SEVERE, null, ex);
         }
     }
     
@@ -52,7 +52,7 @@ public class nWebServer {
      */
     public void Start() {
         try {
-            nController.CurrentLogger.log(Level.INFO, "Starting Nermis Builtin Web Server...");
+            CurrentLogger.log(Level.INFO, "Starting Nermis Builtin Web Server...");
             
             // Create the Web server path if not exists
             this.webServerPath = nResourceHelper.BuildDirectory("Web");
@@ -73,9 +73,9 @@ public class nWebServer {
             this.server.setHandler(handlers);
             //            
             this.server.start();
-            nController.CurrentLogger.log(Level.INFO, "Nermis Builtin Web Server started at http://localhost:{0}", String.valueOf(webserverPort));
+            CurrentLogger.log(Level.INFO, "Nermis Builtin Web Server started at http://localhost:{0}", String.valueOf(webserverPort));
         } catch (Exception ex) {
-            nController.CurrentLogger.log(Level.SEVERE, null, ex);
+            CurrentLogger.log(Level.SEVERE, null, ex);
         }
     }
 

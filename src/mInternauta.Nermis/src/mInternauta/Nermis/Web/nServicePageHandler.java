@@ -18,6 +18,7 @@
  */
 package mInternauta.Nermis.Web;
 
+import mInternauta.Nermis.Utils.nTemplateManager;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.text.DateFormat;
@@ -43,13 +44,13 @@ import org.eclipse.jetty.server.handler.AbstractHandler;
  * Implements the Handler for the Services Page
  */
 public class nServicePageHandler extends AbstractHandler {
-    private final nWebTemplateManager templates = new nWebTemplateManager();
+    private final nTemplateManager templates = new nTemplateManager();
     
     @Override
     public void handle(String string, Request rqst, HttpServletRequest hsr, HttpServletResponse hsr1) throws IOException, ServletException {        
         StringWriter rpWriter = buildItemContents();
         
-        String pageTemplate = templates.load("ServiceStatePage");
+        String pageTemplate = templates.load("ServiceStatePage.html");
         pageTemplate = pageTemplate.replace("{PAGE_CONTENTS}", rpWriter.toString());
         pageTemplate = pageTemplate.replace("{PAGE_TITLE}", nConfigHelper.getDisplayLanguage().getProperty("SERVICEPAGE_TITLE"));
         
@@ -62,7 +63,7 @@ public class nServicePageHandler extends AbstractHandler {
     private StringWriter buildItemContents() {
         nStorage storage =  nStorage.getInstance();
         StringWriter rpWriter = new StringWriter();
-        String tplServiceItem = templates.load("ServiceItem");
+        String tplServiceItem = templates.load("ServiceItem.html");
         if(tplServiceItem.isEmpty() == false) {   
             nServiceStateTable states = storage.loadStates();
             

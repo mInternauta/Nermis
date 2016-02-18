@@ -18,21 +18,18 @@
  */
 package mInternauta.Nermis;
 
-import mInternauta.Nermis.Utils.nResourceHelper;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Map.Entry;
-import java.util.logging.ConsoleHandler;
-import java.util.logging.FileHandler;
 import java.util.logging.Level;
-import java.util.logging.Logger;
-import java.util.logging.SimpleFormatter;
 import mInternauta.Nermis.Persistence.nStorage;
 import mInternauta.Nermis.Core.nService;
 import mInternauta.Nermis.Core.nServiceWatcher;
 import mInternauta.Nermis.Configs.nConfigHelper;
 import mInternauta.Nermis.Configs.nConfiguration;
+import static mInternauta.Nermis.Utils.nApplication.CurrentLogger;
+import static mInternauta.Nermis.Utils.nApplication.Notifiers;
+import static mInternauta.Nermis.Utils.nApplication.Watchers;
 import mInternauta.Nermis.Utils.nJarManager;
 import mInternauta.Nermis.Web.nWebServer;
 import org.quartz.JobBuilder;
@@ -50,13 +47,7 @@ import org.quartz.impl.StdSchedulerFactory;
  * <p>
  * This object performs the control of all Nermis functionality  in server / service mode
  */
-public class nController {    
-    /**
-     * Global logger for the Nermis 
-     */
-    public static final Logger CurrentLogger = Logger.getLogger("NermisLogger");        
-       
-    private static ArrayList<nServiceWatcher> Watchers;           
+public class nController {         
     private Scheduler scheduler;    
     
     static {
@@ -65,19 +56,20 @@ public class nController {
         Watchers = new ArrayList<>();
         
         nConfiguration cfg = nConfigHelper.getConfiguration();
-        _checkWatchersConfig(cfg);
+        _checkJarsConfig(cfg);
         
-        // Load all configured watchers
-        for(Entry<String, String> entry : cfg.WatchersJars.entrySet()) {
-            CurrentLogger.log(Level.INFO, "Loading: " + entry.getKey());
+        // Load all configured watchers and notifiers
+        for(Entry<String, String> entry : cfg.IncludedJars.entrySet()) {
+            CurrentLogger.log(Level.INFO, "Loading: {0}", entry.getKey());
             Watchers.addAll(nJarManager.LoadWatchersFromJar(entry.getValue()));
+            Notifiers.addAll(nJarManager.LoadNotifiersFromJar(entry.getValue()));
         }
     }
 
-    private static void _checkWatchersConfig(nConfiguration cfg) {                
-        if(cfg.WatchersJars == null || cfg.WatchersJars.isEmpty()) {
+    private static void _checkJarsConfig(nConfiguration cfg) {                
+        if(cfg.IncludedJars == null || cfg.IncludedJars.isEmpty()) {
             nConfiguration cfg2 = nConfigHelper.getDefaults();
-            cfg.WatchersJars = cfg2.WatchersJars;
+            cfg.IncludedJars = cfg2.IncludedJars;
             nConfigHelper.Save(cfg);
         }
     }
@@ -95,15 +87,7 @@ public class nController {
      * Start the controller 
      */
     public void Start() {
-        try {
-            // Setup the Logger
-            CurrentLogger.setLevel(Level.ALL);
-            CurrentLogger.setUseParentHandlers(false);
-            CurrentLogger.addHandler(new ConsoleHandler());
-            FileHandler fileLog = new FileHandler(nResourceHelper.BuildName("Logs", "Global").getAbsolutePath(), 1000024, 5);
-            fileLog.setFormatter(new SimpleFormatter());
-            CurrentLogger.addHandler(fileLog);
-            
+        try {            
             // -
             CurrentLogger.log(Level.INFO, "Nermis Remote Service Monitoring Controller");
             CurrentLogger.log(Level.INFO, "Copyright (C) 2016");
@@ -127,7 +111,7 @@ public class nController {
             
             // - 
             CurrentLogger.log(Level.INFO, "Loaded");
-        } catch (IOException | SecurityException | SchedulerException ex) {
+        } catch (SecurityException | SchedulerException ex) {
             CurrentLogger.log(Level.SEVERE, null, ex);
         }
     }

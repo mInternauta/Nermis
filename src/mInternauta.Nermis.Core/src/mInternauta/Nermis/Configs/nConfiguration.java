@@ -38,7 +38,18 @@ public class nConfiguration {
     public String Language;   
     
     /**
-     * Installed Watchers Jars
+     * Current Configured Notifier
      */
-    public HashMap<String, String> WatchersJars;
+    public String Notifier;
+    
+    
+    /**
+     * Notifier Configuration
+     */
+    public HashMap<String, String> NotifierProperties;
+    
+    /**
+     * Installed Jars
+     */
+    public HashMap<String, String> IncludedJars;
 }

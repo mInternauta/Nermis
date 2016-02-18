@@ -16,21 +16,20 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  * 
  */
-package mInternauta.Nermis.Web;
+package mInternauta.Nermis.Utils;
 
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.StringWriter;
 import java.nio.charset.Charset;
 import java.util.logging.Level;
-import mInternauta.Nermis.Utils.nResourceHelper;
-import mInternauta.Nermis.nController;
 import org.apache.commons.io.IOUtils;
+import static mInternauta.Nermis.Utils.nApplication.CurrentLogger;
 
 /**
  * Manage the Web Template for web pages
  */
-public class nWebTemplateManager {
+public class nTemplateManager {
     /**
      * Loads a template 
      * If the resource not exists in the disk, try to seek for the default template.
@@ -43,13 +42,13 @@ public class nWebTemplateManager {
         validate(name);
         
         try {
-            InputStream stream = nResourceHelper.ReadResource(name, "WebTemplates");
+            InputStream stream = nResourceHelper.ReadResource(name, "Templates");
             StringWriter writer = new StringWriter();
             IOUtils.copy(stream, writer, Charset.defaultCharset());
             
             template = writer.toString();
         } catch (Exception ex) {
-            nController.CurrentLogger.logp(Level.SEVERE, "WebTemplates", "Load", ex.getLocalizedMessage());
+            CurrentLogger.logp(Level.SEVERE, "Templates", "Load", ex.getLocalizedMessage());
         }
         
         return template;
@@ -63,17 +62,17 @@ public class nWebTemplateManager {
     {
         try 
         {
-            if(nResourceHelper.ExistsResource(name, "WebTemplates") == false) {
-                InputStream template = nWebTemplateManager.class.getResourceAsStream("/assets/Nermis/WebTemplates/" + name + ".html");
+            if(nResourceHelper.ExistsResource(name, "Templates") == false) {
+                InputStream template = nTemplateManager.class.getResourceAsStream("/assets/Nermis/Templates/" + name);
                 if(template != null) {
-                    OutputStream output = nResourceHelper.WriteResource(name, "WebTemplates");
+                    OutputStream output = nResourceHelper.WriteResource(name, "Templates");
                     IOUtils.copy(template, output);
                     output.flush();
                     output.close();
                 }
             } 
         } catch (Exception ex) {
-            nController.CurrentLogger.logp(Level.SEVERE, "WebTemplates", "Validate", ex.getLocalizedMessage());
+            CurrentLogger.logp(Level.SEVERE, "Templates", "Validate", ex.getLocalizedMessage());
         }
     }
 }

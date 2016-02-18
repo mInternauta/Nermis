@@ -40,7 +40,7 @@ public abstract class nAbstractNotifier {
      * @param message 
      */
     public abstract void NotifyServerError(String message);
-    
+        
     /**
      * Configure the Notifier
      * @param props 

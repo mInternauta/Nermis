@@ -28,6 +28,8 @@ import org.apache.commons.cli.Options;
 
 public class CLISettings implements ICLICommand {
 
+    // TODO: Implements the commands to configure the Notifier
+    
     @Override
     public String getName() {
         return "settings";
@@ -97,10 +99,10 @@ public class CLISettings implements ICLICommand {
             File file = new File(jar);
             
             if(file.exists()) {
-                if(cfg.WatchersJars == null) {
-                    cfg.WatchersJars = new HashMap<>();
+                if(cfg.IncludedJars == null) {
+                    cfg.IncludedJars = new HashMap<>();
                 }
-                cfg.WatchersJars.put(name.trim(), jar);
+                cfg.IncludedJars.put(name.trim(), jar);
                 System.out.println("Jar included to the Nermis, restart to take effect.");
             } else {
                 System.out.println("Cant find the jar file: " + file.getAbsolutePath());

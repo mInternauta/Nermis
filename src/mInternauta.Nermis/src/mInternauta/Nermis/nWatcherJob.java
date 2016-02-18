@@ -23,12 +23,15 @@ import java.util.logging.Level;
 import mInternauta.Nermis.Persistence.nStorage;
 import mInternauta.Nermis.Core.nService;
 import mInternauta.Nermis.Core.nServiceResults;
+import mInternauta.Nermis.Core.nServiceState;
 import mInternauta.Nermis.Core.nServiceStateRecord;
 import mInternauta.Nermis.Core.nServiceWatcher;
+import mInternauta.Nermis.Utils.nApplication;
 import org.quartz.Job;
 import org.quartz.JobDataMap;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
+import static mInternauta.Nermis.Utils.nApplication.CurrentLogger;
 
 /**
  * Watcher Job for the scheduled task
@@ -42,14 +45,14 @@ public class nWatcherJob implements Job {
             JobDataMap data = jec.getJobDetail().getJobDataMap();       
 
             // -
-            nController.CurrentLogger.log(Level.INFO, "Starting job: {0}", jec.getFireInstanceId());
+            CurrentLogger.log(Level.INFO, "Starting job: {0}", jec.getFireInstanceId());
 
             // - Arguments for the Job
             String watcherName = data.getString("Watcher");
             String serviceName = data.getString("Service");
 
             // -
-            nController.CurrentLogger.log(Level.INFO, "Fetched job information: {0}-{1}", new Object[]{serviceName, watcherName});
+            CurrentLogger.log(Level.INFO, "Fetched job information: {0}-{1}", new Object[]{serviceName, watcherName});
 
             // - Fetch the Watcher and the Service
             nService service = null;
@@ -74,16 +77,11 @@ public class nWatcherJob implements Job {
             // - Check the fetched data
             if(service != null && watcher != null) 
             {
-                nController.CurrentLogger.log(Level.INFO, "Executing the Watcher for {0}", serviceName);
+                CurrentLogger.log(Level.INFO, "Executing the Watcher for {0}", serviceName);
 
                 if(watcher.validate(service)) {
                     // Executes the Watcher
                     nServiceResults results = watcher.execute(service);
-
-                    // Print the result 
-                    if(results.Message != null && results.Message.isEmpty() == false) {
-                        nController.CurrentLogger.log(Level.INFO, "Watcher returned: {0}->{1}", new Object[]{serviceName, results.Message});
-                    }
 
                     // Save the Result in the States Table
                     nServiceStateRecord record = new nServiceStateRecord();
@@ -93,19 +91,29 @@ public class nWatcherJob implements Job {
                      nStorage.getInstance().States.put(serviceName, record);
                      nStorage.getInstance().saveStates(nStorage.getInstance().States);
 
-                     nController.CurrentLogger.log(Level.INFO, "Executed the Watcher for {0}", serviceName);
+                     CurrentLogger.log(Level.INFO, "Executed the Watcher for {0}", serviceName);
+                     
+                     if(record.State != nServiceState.ONLINE) {
+                         String message = "Unresponsive";          
+                         
+                         if(results.Message != null && results.Message.isEmpty() == false) {
+                             message = results.Message;
+                         }
+                         
+                         nApplication.getNofitier().NotifyServiceOffine(service, message);
+                     }
                 } else {
-                    nController.CurrentLogger.log(Level.SEVERE, "Invalid service settings for the current watcher: {0}", serviceName);
+                    CurrentLogger.log(Level.SEVERE, "Invalid service settings for the current watcher: {0}", serviceName);
                 }
             }
             else 
             {
-                nController.CurrentLogger.log(Level.SEVERE, "Cant fetch service information: {0}", serviceName);
+                CurrentLogger.log(Level.SEVERE, "Cant fetch service information: {0}", serviceName);
             }
         } 
         catch(Exception ex)
         {
-            nController.CurrentLogger.log(Level.INFO, "Error: {0}", ex.toString());
+            CurrentLogger.log(Level.INFO, "Error: {0}", ex.toString());
         }
     }
     

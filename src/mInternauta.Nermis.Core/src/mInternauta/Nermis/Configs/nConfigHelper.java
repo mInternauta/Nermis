@@ -98,8 +98,11 @@ public class nConfigHelper {
         nConfiguration cfg = new nConfiguration();
         cfg.WebServerPort = 5000;
         cfg.Language = "english";
-        cfg.WatchersJars = new HashMap<>();
-        cfg.WatchersJars.put("Builtin Watchers", "./lib/mInternauta.Nermis.Builtin");
+        
+        cfg.IncludedJars = new HashMap<>();
+        cfg.IncludedJars.put("Builtin Components", "./lib/mInternauta.Nermis.Builtin");
+        cfg.Notifier = "";
+        cfg.NotifierProperties = new HashMap<>();
         
         return cfg;
     }

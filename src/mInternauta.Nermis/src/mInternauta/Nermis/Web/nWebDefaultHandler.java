@@ -40,6 +40,7 @@ import org.luaj.vm2.Globals;
 import org.luaj.vm2.LuaValue;
 import org.luaj.vm2.lib.jse.CoerceJavaToLua;
 import org.luaj.vm2.lib.jse.JsePlatform;
+import static mInternauta.Nermis.Utils.nApplication.CurrentLogger;
 
 /**
  * Default Web Handler for the Jetty
@@ -88,8 +89,8 @@ public class nWebDefaultHandler extends AbstractHandler {
         }
         catch(Exception exp)
         {
-            nController.CurrentLogger.log(Level.SEVERE, "Web Server Error: ");
-            nController.CurrentLogger.log(Level.SEVERE, exp.toString());
+            CurrentLogger.log(Level.SEVERE, "Web Server Error: ");
+            CurrentLogger.log(Level.SEVERE, exp.toString());
             resp.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
         }
     }

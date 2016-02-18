@@ -23,24 +23,22 @@ import java.io.IOException;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Enumeration;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 import java.util.logging.Level;
 import mInternauta.Nermis.Core.nServiceWatcher;
-import static mInternauta.Nermis.nController.CurrentLogger;
+import mInternauta.Nermis.Notifiers.nAbstractNotifier;
+import static mInternauta.Nermis.Utils.nApplication.CurrentLogger;
 
 /**
  * Jar File Manager
  */
 public class nJarManager {
-    /**
-     * Load all Watchers in the Jar
-     * @param pathToJar Path to the Jar File
-     * @return A list of watchers in the jar
-     */
-    public static ArrayList<nServiceWatcher> LoadWatchersFromJar(String pathToJar) {
-        ArrayList<nServiceWatcher> Watchers = new ArrayList<>();
+    
+    private static <T> ArrayList<T> seekJar(String pathToJar) {
+        ArrayList<T> list = new ArrayList<>();
         
         try {
             File filePath = new File(pathToJar + ".jar");
@@ -60,18 +58,39 @@ public class nJarManager {
                 className = className.replace('/', '.');
                 Class c = cl.loadClass(className);                         
                 Class[] interfaces = c.getInterfaces();
-                for(Class it : interfaces) {
-                    if(it.equals(nServiceWatcher.class)) {
-                        nServiceWatcher watcher = (nServiceWatcher)c.newInstance();
-                        Watchers.add(watcher);
+                for(Class it : interfaces) {                    
+                    if(it.equals(list.getClass().getGenericSuperclass())) {
+                        T obj = (T)c.newInstance();
+                        list.add(obj);
                         break;
                     }
                 }
             }
-        } catch (Exception ex) {
+        } catch (IOException | ClassNotFoundException | InstantiationException | IllegalAccessException ex) {
             CurrentLogger.log(Level.SEVERE, null, ex);
         } 
         
+        return list;
+    }
+    
+    /**
+     * Load all Watchers in the Jar
+     * @param pathToJar Path to the Jar File
+     * @return A list of watchers in the jar
+     */
+    public static ArrayList<nServiceWatcher> LoadWatchersFromJar(String pathToJar) {
+        ArrayList<nServiceWatcher> Watchers = new ArrayList<>();
+        
+        Watchers = seekJar(pathToJar);
+        
         return Watchers;
+    }
+
+    public static ArrayList<nAbstractNotifier> LoadNotifiersFromJar(String pathToJar) {
+        ArrayList<nAbstractNotifier> notifiers = new ArrayList<>();
+        
+        notifiers = seekJar(pathToJar);
+        
+        return notifiers;
     }
 }

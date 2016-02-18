@@ -25,7 +25,7 @@ import java.io.InputStream;
 import java.util.Properties;
 import java.util.logging.Level;
 import mInternauta.Nermis.Utils.nResourceHelper;
-import mInternauta.Nermis.nController;
+import static mInternauta.Nermis.Utils.nApplication.CurrentLogger;
 
 /**
  * Manage the display language files
@@ -54,7 +54,7 @@ public class nLanguage {
             
             props.load(stream);            
         } catch (IOException ex) {
-          nController.CurrentLogger.log(Level.SEVERE, null, ex);
+           CurrentLogger.log(Level.SEVERE, null, ex);
         }
        
         return props;
