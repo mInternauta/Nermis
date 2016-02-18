@@ -154,9 +154,10 @@ public class nServiceHelper {
             } else {
                 if(cService.Properties != null) {
                     cService.Properties = new HashMap<>();
-                }
+                } 
                 
-                cService.Properties.remove(propertyName);
+                if(cService.Properties.containsKey(propertyName.trim()))
+                    cService.Properties.remove(propertyName.trim());
             }
             
             services.add(cService);

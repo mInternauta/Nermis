@@ -6,7 +6,6 @@ import java.io.InputStreamReader;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /*
  * Copyright (C) 2016 mInternauta
@@ -49,7 +48,7 @@ public class Main {
             createThread();            
             srvThread.start();
             
-            System.out.println("Server is online");            
+            nApplication.CurrentLogger.log(Level.INFO, "Server is online");
             // - Runtime Shutdown
             setRuntimeShutdown();
             
@@ -57,7 +56,7 @@ public class Main {
                 Thread.sleep(1000);
             }
         } catch (IOException | InterruptedException ex) {
-             System.out.println("Server Error: " + ex);
+             nApplication.CurrentLogger.log(Level.SEVERE, ex.toString());
         }
     }
 
@@ -73,7 +72,7 @@ public class Main {
                     
                     Thread.currentThread().interrupt();
                 } catch (InterruptedException | IOException ex) {
-                    System.out.println("Server Error: " + ex);
+                    nApplication.CurrentLogger.log(Level.SEVERE, ex.toString());
                 }
             }
         });
@@ -88,7 +87,7 @@ public class Main {
                     try {
                         Socket connSocket = server.accept();
                         
-                        System.out.println("New connection. Waiting for data...");
+                       nApplication.CurrentLogger.log(Level.INFO, "New connection. Waiting for data...");
                         BufferedReader inFromClient = new BufferedReader(new InputStreamReader(connSocket.getInputStream()));
                         DataOutputStream outToClient = new DataOutputStream(connSocket.getOutputStream());
                         
@@ -102,9 +101,9 @@ public class Main {
                         }
                         
                         outToClient.flush();
-                        System.out.println("Finished transferred: " + String.valueOf(readed) + " characters");
+                       nApplication.CurrentLogger.log(Level.INFO, "Finished transferred: " + String.valueOf(readed) + " characters");
                     } catch (IOException ex) {
-                        System.out.println("Server Socket Error: " + ex);
+                        nApplication.CurrentLogger.log(Level.SEVERE, ex.toString());
                     }
                 }
             }

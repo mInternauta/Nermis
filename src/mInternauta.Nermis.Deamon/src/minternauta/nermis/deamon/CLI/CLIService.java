@@ -173,7 +173,7 @@ public class CLIService implements ICLICommand {
             String serviceName = this.selectedService;
             
             if(serviceName != null && serviceName.isEmpty() == false) {               
-                String propertyName = cmd.getOptionValue("setprop");
+                String propertyName = cmd.getOptionValue("rmprop");
                 
                 nServiceHelper.RemoveProperty(propertyName, serviceName);
                 System.out.println("Property setted");
