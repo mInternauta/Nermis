@@ -1,5 +1,6 @@
 package mInternauta.Nermis.Core;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 
 /*
@@ -39,9 +40,10 @@ public interface nServiceWatcher {
     /**
      * Execute the analyze routine
      * @param service Service to execute
+     * @param context Context 
      * @return Results for the service analyze
      */
-    public nServiceResults execute(nService service);
+    public nServiceResults execute(nService service, nServiceWatcherContext context);
     
     /**
      * Examines whether the service is correctly configured for this watcher
@@ -56,4 +58,10 @@ public interface nServiceWatcher {
      * @return 
      */
     public HashMap<String,String> getExtPropertiesHelp();
+    
+    /**
+     * 
+     * @return 
+     */
+    public ArrayList<nRRDDatasource> getRRDDatasources();
 }

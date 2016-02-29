@@ -26,12 +26,18 @@ import mInternauta.Nermis.Core.nServiceResults;
 import mInternauta.Nermis.Core.nServiceState;
 import mInternauta.Nermis.Core.nServiceStateRecord;
 import mInternauta.Nermis.Core.nServiceWatcher;
+import mInternauta.Nermis.Core.nServiceWatcherContext;
 import mInternauta.Nermis.Utils.nApplication;
 import org.quartz.Job;
 import org.quartz.JobDataMap;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
 import static mInternauta.Nermis.Utils.nApplication.CurrentLogger;
+
+// TODO: Implement global measurements
+// TODO: Implement per Watcher Measurements
+// TODO: Implement RRD Graphs
+// TODO: Implement DNS Check Watcher
 
 /**
  * Watcher Job for the scheduled task
@@ -80,8 +86,11 @@ public class nWatcherJob implements Job {
                 CurrentLogger.log(Level.INFO, "Executing the Watcher for {0}", serviceName);
 
                 if(watcher.validate(service)) {
+                    nServiceWatcherContext watcherContext = new nServiceWatcherContext();
+                    watcherContext.Rrd = nController.getRrdManager();
+                    
                     // Executes the Watcher
-                    nServiceResults results = watcher.execute(service);
+                    nServiceResults results = watcher.execute(service, watcherContext);
 
                     // Save the Result in the States Table
                     nServiceStateRecord record = new nServiceStateRecord();

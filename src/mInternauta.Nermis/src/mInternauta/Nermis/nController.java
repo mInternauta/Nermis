@@ -18,6 +18,7 @@
  */
 package mInternauta.Nermis;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Map.Entry;
@@ -27,6 +28,8 @@ import mInternauta.Nermis.Core.nService;
 import mInternauta.Nermis.Core.nServiceWatcher;
 import mInternauta.Nermis.Configs.nConfigHelper;
 import mInternauta.Nermis.Configs.nConfiguration;
+import mInternauta.Nermis.Core.IRrdManager;
+import mInternauta.Nermis.RRD.nRRDManager;
 import static mInternauta.Nermis.Utils.nApplication.CurrentLogger;
 import static mInternauta.Nermis.Utils.nApplication.Notifiers;
 import static mInternauta.Nermis.Utils.nApplication.Watchers;
@@ -49,6 +52,9 @@ import org.quartz.impl.StdSchedulerFactory;
  */
 public class nController {         
     private Scheduler scheduler;    
+    private nWebServer webServer;
+    
+    private static nRRDManager rrdManager;
     
     static {
         // Load all Watchers
@@ -75,14 +81,36 @@ public class nController {
     }
     
     /**
+     * Return the RRD Manager instance 
+     * @return 
+     */
+    public static IRrdManager getRrdManager() {
+        return rrdManager;
+    }
+    
+    /**
+     * Search for the watcher of the service
+     * @param service
+     * @return the watcher or null if cant find the watcher
+     */
+    public static nServiceWatcher getWatcherFor(nService service) {
+        nServiceWatcher watcher = null;
+        for (nServiceWatcher cWatcher : nController.getRegistredWatchers()) {
+            if (cWatcher.getName().equalsIgnoreCase(service.Watcher)) {
+                watcher = cWatcher;
+                break;
+            }
+        }
+        return watcher;
+    }
+    
+    /**
      * This method returns the current list of Service Watchers
      * @return 
      */
     public static ArrayList<nServiceWatcher> getRegistredWatchers() {
         return Watchers;
     }
-    private nWebServer webServer;
-    
     /**
      * Start the controller 
      */
@@ -102,8 +130,15 @@ public class nController {
             
             // -
             loadAllJobs();
+                        
+            // -  Load RRD Graphs
+            CurrentLogger.log(Level.INFO, "Configuring all rrd data... ");
+            rrdManager = new nRRDManager();
+            for(nService service :  nStorage.getInstance().Services) {
+                rrdManager.CreateRrd(service);
+            }
             
-            // -
+            // - Start all Jobs
             scheduler.startDelayed(5);
             
             // - Start the Web Server
@@ -111,7 +146,7 @@ public class nController {
             
             // - 
             CurrentLogger.log(Level.INFO, "Loaded");
-        } catch (SecurityException | SchedulerException ex) {
+        } catch (SecurityException | SchedulerException | IOException ex) {
             CurrentLogger.log(Level.SEVERE, null, ex);
         }
     }
