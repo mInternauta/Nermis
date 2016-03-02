@@ -29,7 +29,7 @@ import mInternauta.Nermis.Core.nServiceWatcher;
 import mInternauta.Nermis.Configs.nConfigHelper;
 import mInternauta.Nermis.Configs.nConfiguration;
 import mInternauta.Nermis.Core.IRrdManager;
-import mInternauta.Nermis.RRD.nRRDManager;
+import mInternauta.Nermis.RRD.nRrdManager;
 import static mInternauta.Nermis.Utils.nApplication.CurrentLogger;
 import static mInternauta.Nermis.Utils.nApplication.Notifiers;
 import static mInternauta.Nermis.Utils.nApplication.Watchers;
@@ -54,7 +54,7 @@ public class nController {
     private Scheduler scheduler;    
     private nWebServer webServer;
     
-    private static nRRDManager rrdManager;
+    private static nRrdManager rrdManager;
     
     static {
         // Load all Watchers
@@ -130,13 +130,9 @@ public class nController {
             
             // -
             loadAllJobs();
-                        
-            // -  Load RRD Graphs
-            CurrentLogger.log(Level.INFO, "Configuring all rrd data... ");
-            rrdManager = new nRRDManager();
-            for(nService service :  nStorage.getInstance().Services) {
-                rrdManager.CreateRrd(service);
-            }
+                 
+            // -
+            setupRrd();
             
             // - Start all Jobs
             scheduler.startDelayed(5);
@@ -149,6 +145,39 @@ public class nController {
         } catch (SecurityException | SchedulerException | IOException ex) {
             CurrentLogger.log(Level.SEVERE, null, ex);
         }
+    }
+
+    private void setupRrd() throws IOException, SchedulerException {
+        // -  Load RRD Graphs
+        CurrentLogger.log(Level.INFO, "Configuring all rrd data... ");
+        rrdManager = new nRrdManager();
+        for(nService service :  nStorage.getInstance().Services) {
+            rrdManager.CreateRrd(service);
+        }
+        
+        setupRrdJob();
+    }
+
+    private void setupRrdJob() throws SchedulerException {
+        // - Setup Rrd Job
+        JobDetail job = JobBuilder.newJob(nRrdGraphsJob.class)
+                .withIdentity("Job_RRDGraphs", "RRD")
+                .build();
+        
+        SimpleScheduleBuilder schedule = SimpleScheduleBuilder.simpleSchedule()
+                .withIntervalInSeconds(30)
+                .repeatForever();
+        
+        // - Build the Trigger
+        SimpleTrigger trigger = TriggerBuilder
+                .newTrigger()
+                .withIdentity("Tg_RRDGraphs", "RRD")
+                .startAt(new Date())
+                .withSchedule(schedule)
+                .build();
+        
+        // -
+        scheduler.scheduleJob(job, trigger);
     }
 
     /**

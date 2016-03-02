@@ -95,12 +95,18 @@ public class nResourceHelper {
         
         path += name;
         
+        
+        
         if(kind.equalsIgnoreCase("Settings")) {
             path += ".xml";
         } else if(kind.equalsIgnoreCase("Logs")) {
             path += ".log";
         } else if(kind.equalsIgnoreCase("Langs")) {
             path += ".properties";
+        } else if(kind.equalsIgnoreCase("RRD")) {
+            path += ".rrd";
+        } else if(kind.equalsIgnoreCase("Graphs")) {
+            path += ".png";
         } else {
             path += ".nmd";
         }

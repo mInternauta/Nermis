@@ -19,11 +19,15 @@
 package mInternauta.Nermis.Builtin.Watchers;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
+import mInternauta.Nermis.Core.nRrdDatasource;
+import mInternauta.Nermis.Core.nRrdType;
 import mInternauta.Nermis.Core.nService;
 import mInternauta.Nermis.Core.nServiceResults;
 import mInternauta.Nermis.Core.nServiceState;
 import mInternauta.Nermis.Core.nServiceWatcher;
+import mInternauta.Nermis.Core.nServiceWatcherContext;
 import org.apache.commons.net.ftp.FTPClient;
 
 /**
@@ -35,7 +39,7 @@ import org.apache.commons.net.ftp.FTPClient;
  * Password => Password for authentication (can be blank for anonymous account)
  * Port (Default: 21) => Ftp Server port 
  */
-public class nFtpWatcher implements nServiceWatcher {
+public class nFtpWatcher extends nServiceWatcher {
 
     @Override
     public String getName() {
@@ -43,7 +47,7 @@ public class nFtpWatcher implements nServiceWatcher {
     }
 
     @Override
-    public nServiceResults execute(nService service) {
+    public nServiceResults execute(nService service, nServiceWatcherContext context) {
         nServiceResults result = new nServiceResults();
         
         String hostname = service.Properties.get("Hostname");
@@ -55,9 +59,19 @@ public class nFtpWatcher implements nServiceWatcher {
         FTPClient ftp = new FTPClient();
         
         try {
+            
+            
+            // -------
+            this.beginMeasure();            
+
             // Try to connect
             ftp.connect(hostname, port);
             
+            this.stopMeasure(service, context, "connect");
+            // -------
+                        
+            // -------
+            this.beginMeasure();
             // Try to login
             if(ftp.login(user, passwd)) {
                 result.State = nServiceState.ONLINE;
@@ -65,6 +79,8 @@ public class nFtpWatcher implements nServiceWatcher {
                 result.Message = "Invalid login!";
                 result.State = nServiceState.OFFLINE;
             }
+            this.stopMeasure(service, context, "response");
+            // -------
             
             // Disconnect
             ftp.disconnect();
@@ -99,6 +115,34 @@ public class nFtpWatcher implements nServiceWatcher {
         props.put("Port", "(Optional)Ftp Server Port, if is blank the watcher will use the default: 21");
         
         return props;
+    }
+
+    @Override
+    public ArrayList<nRrdDatasource> getRRDDatasources() {
+        ArrayList<nRrdDatasource> sources = new ArrayList<>();
+        
+        // - Deep Watcher Response Time
+        nRrdDatasource srcResponseTime = new nRrdDatasource();
+        srcResponseTime.Heartbeat = 600;
+        srcResponseTime.MaxValue = Double.MAX_VALUE;
+        srcResponseTime.MinValue = 0;
+        srcResponseTime.Name = "response";
+        srcResponseTime.InternalName = "response";
+        srcResponseTime.Type = nRrdType.DERIVE;
+        
+        // - Deep Watcher Connection Time
+        nRrdDatasource srcConnectionCounter = new nRrdDatasource();
+        srcConnectionCounter.Heartbeat = 600;
+        srcConnectionCounter.MaxValue = Double.MAX_VALUE;
+        srcConnectionCounter.MinValue = 0;
+        srcConnectionCounter.Name = "connect";
+        srcConnectionCounter.InternalName = "connect";
+        srcConnectionCounter.Type = nRrdType.DERIVE;
+        
+        sources.add(srcResponseTime);
+        sources.add(srcConnectionCounter);
+        
+        return sources;
     }
     
 }

@@ -23,8 +23,8 @@ import java.io.IOException;
 import java.util.Date;
 import java.util.logging.Level;
 import mInternauta.Nermis.Core.IRrdManager;
-import mInternauta.Nermis.Core.nRRDDatasource;
-import mInternauta.Nermis.Core.nRRDType;
+import mInternauta.Nermis.Core.nRrdDatasource;
+import mInternauta.Nermis.Core.nRrdType;
 import mInternauta.Nermis.Core.nService;
 import mInternauta.Nermis.Core.nServiceWatcher;
 import static mInternauta.Nermis.Utils.nApplication.CurrentLogger;
@@ -41,7 +41,7 @@ import org.rrd4j.core.Sample;
 /**
  * Manage all RRD data for the service
  */
-public class nRRDManager implements IRrdManager 
+public class nRrdManager implements IRrdManager 
 {
     /**
      * Update the Rrd data for the Service
@@ -49,6 +49,7 @@ public class nRRDManager implements IRrdManager
      * @param dataSource
      * @param value 
      */
+    @Override
     public void UpdateRrd(nService service, String dataSource, double value)
     {
         Date date = new Date();
@@ -61,7 +62,7 @@ public class nRRDManager implements IRrdManager
             rrdSample.setTime(date.getTime());
             rrdSample.setValue(dataSource, value);
             rrdSample.update();
-            
+                        
             rrd.close();
         } catch (IOException ex) {
              CurrentLogger.log(Level.SEVERE, null, ex);
@@ -72,6 +73,7 @@ public class nRRDManager implements IRrdManager
      * Creates the Rrd Definition for the service
      * @param service
      * @return 
+     * @throws java.io.IOException 
      */
     public RrdDef CreateRrd(nService service) throws IOException
     {
@@ -84,13 +86,17 @@ public class nRRDManager implements IRrdManager
         
         // - Setup the RRD Data Sources
         nServiceWatcher watcher = nController.getWatcherFor(service);        
-        for(nRRDDatasource rrdSource : watcher.getRRDDatasources()) {
+        for(nRrdDatasource rrdSource : watcher.getRRDDatasources()) {
             DsType dsType = toDsType(rrdSource);            
-            rrd.addDatasource(rrdSource.Name, dsType,
+            rrd.addDatasource(rrdSource.InternalName, dsType,
                     rrdSource.Heartbeat,
                     rrdSource.MinValue, 
                     rrdSource.MaxValue);           
         }    
+        
+        // - Global Datasources
+        rrd.addDatasource("fails", DsType.COUNTER, 300, 0, Double.MAX_VALUE);
+        rrd.addDatasource("success", DsType.COUNTER, 300, 0, Double.MAX_VALUE);
         
         // - Add all archives
         rrd.addArchive(AVERAGE, 0.5, 1, 600);
@@ -113,18 +119,18 @@ public class nRRDManager implements IRrdManager
         return rrd;
     }
 
-    private static DsType toDsType(nRRDDatasource rrdSource) {
+    private static DsType toDsType(nRrdDatasource rrdSource) {
         DsType dsType = DsType.ABSOLUTE;
-        if(rrdSource.Type == nRRDType.ABSOLUTE) {
+        if(rrdSource.Type == nRrdType.ABSOLUTE) {
             dsType = DsType.ABSOLUTE;
         }
-        if(rrdSource.Type == nRRDType.COUNTER) {
+        if(rrdSource.Type == nRrdType.COUNTER) {
             dsType = DsType.COUNTER;
         }
-        if(rrdSource.Type == nRRDType.DERIVE) {
+        if(rrdSource.Type == nRrdType.DERIVE) {
             dsType = DsType.DERIVE;
         }
-        if(rrdSource.Type == nRRDType.GAUGE) {
+        if(rrdSource.Type == nRrdType.GAUGE) {
             dsType = DsType.GAUGE;
         }
         return dsType;

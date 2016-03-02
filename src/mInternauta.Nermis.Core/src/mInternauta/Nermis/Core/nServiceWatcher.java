@@ -2,6 +2,7 @@ package mInternauta.Nermis.Core;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import org.apache.commons.lang3.time.StopWatch;
 
 /*
  * Copyright (C) 2015 mInternauta
@@ -30,12 +31,32 @@ import java.util.HashMap;
  * they are scheduled and can run several times,
  * monitoring the current state of the service and considering whether it is operational or not.
  */
-public interface nServiceWatcher {
+public abstract class nServiceWatcher {
+    
+    private StopWatch MeasurementStopwatch = new StopWatch();
+        
+    protected void stopMeasure(nService service, nServiceWatcherContext context, String dsName)
+    {           
+        // Stop the Connection Measurement
+        this.MeasurementStopwatch.stop();
+            
+        // - Update the connection time
+        context.Rrd.UpdateRrd(service, dsName, this.MeasurementStopwatch.getTime());
+        
+        this.MeasurementStopwatch.reset();
+    }
+    
+    protected void beginMeasure()
+    {
+        // Start the Connection Measurement
+        this.MeasurementStopwatch.start();    
+    }
+    
     /**
      * Get the watcher name
      * @return 
      */
-    public String getName();
+    public abstract String getName();
     
     /**
      * Execute the analyze routine
@@ -43,25 +64,25 @@ public interface nServiceWatcher {
      * @param context Context 
      * @return Results for the service analyze
      */
-    public nServiceResults execute(nService service, nServiceWatcherContext context);
+    public abstract nServiceResults execute(nService service, nServiceWatcherContext context);
     
     /**
      * Examines whether the service is correctly configured for this watcher
      * @param service
      * @return 
      */
-    public boolean validate(nService service);
+    public abstract boolean validate(nService service);
     
     
     /**
      * Returns a list of all extended properties required by the Watcher and the explanation of each property.
      * @return 
      */
-    public HashMap<String,String> getExtPropertiesHelp();
+    public abstract HashMap<String,String> getExtPropertiesHelp();
     
     /**
      * 
      * @return 
      */
-    public ArrayList<nRRDDatasource> getRRDDatasources();
+    public abstract ArrayList<nRrdDatasource> getRRDDatasources();
 }

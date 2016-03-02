@@ -20,15 +20,24 @@ package mInternauta.Nermis.Builtin.Watchers;
 
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
+import mInternauta.Nermis.Core.nRrdDatasource;
+import mInternauta.Nermis.Core.nRrdType;
 import mInternauta.Nermis.Core.nService;
 import mInternauta.Nermis.Core.nServiceResults;
 import mInternauta.Nermis.Core.nServiceState;
 import mInternauta.Nermis.Core.nServiceWatcher;
+import mInternauta.Nermis.Core.nServiceWatcherContext;
+import mInternauta.Nermis.Utils.nResourceHelper;
+import org.apache.commons.io.IOUtils;
 
 /**
  * This watcher analyzes a Web http or https connection, it can analyze the POST or GET request.
@@ -41,7 +50,7 @@ import mInternauta.Nermis.Core.nServiceWatcher;
  * PostData => The Post data, format like URL Encoding:
  * mykey=myvalue&mykey2=myvalue2
  */
-public class nWebWatcher implements nServiceWatcher {
+public class nWebWatcher extends nServiceWatcher {
 
     @Override
     public String getName() {
@@ -49,14 +58,17 @@ public class nWebWatcher implements nServiceWatcher {
     }
 
     @Override
-    public nServiceResults execute(nService service) {
+    public nServiceResults execute(nService service, nServiceWatcherContext context) {
         nServiceResults results = new nServiceResults();
         
         try {
             String method = (String)service.Properties.get("Method");
             String plainUrl = service.Properties.get("Protocol") + "://" + service.Properties.get("Url");
             URL url = new URL(plainUrl);
+            
+            this.beginMeasure();
             URLConnection conn = url.openConnection();
+            this.stopMeasure(service, context, "connect");
             
             HttpURLConnection httpConn = (HttpURLConnection)conn;
             
@@ -64,6 +76,7 @@ public class nWebWatcher implements nServiceWatcher {
             
             if(method.equalsIgnoreCase("Post")) // Send the post data
             {
+                this.beginMeasure();
                 httpConn.setRequestMethod("POST");
                 conn.setDoOutput(true);
                 
@@ -73,13 +86,27 @@ public class nWebWatcher implements nServiceWatcher {
 		wr.flush();
 		wr.close();
                 
+
                 checkResponse(httpConn, results);
+                
+                this.stopMeasure(service, context, "response");
+                              
+                // Download the Response                
+                if(results.State == nServiceState.ONLINE) {
+                    downloadResp(httpConn, service, context);                
+                }
             } 
             else if(method.equalsIgnoreCase("Get")) // Try fetch the response
             {
-                httpConn.setRequestMethod("GET");                
+                this.beginMeasure();
+                httpConn.setRequestMethod("GET");       
                 
                 checkResponse(httpConn, results);
+                this.stopMeasure(service, context, "response");
+                
+                if(results.State == nServiceState.ONLINE) {
+                    downloadResp(httpConn, service, context);                
+                }
             }
             else 
             {
@@ -92,9 +119,26 @@ public class nWebWatcher implements nServiceWatcher {
         } catch (IOException ex) {            
             results.Message = ex.toString();
             results.State = nServiceState.OFFLINE;
+        } catch (Exception ex) {
+            results.Message = ex.toString();
+            results.State = nServiceState.OFFLINE;
         }
         
         return results;
+    }
+
+    private void downloadResp(HttpURLConnection httpConn, nService service, nServiceWatcherContext context) throws IOException, Exception {
+        // Download the page
+        String tmpWebDFile = "tempWebD_" + String.valueOf(new Date().getTime()) + ".tmp";
+        OutputStream tmpDownloadFile = nResourceHelper.WriteResource(tmpWebDFile, "Temp");
+        InputStream inputResp = httpConn.getInputStream();
+        
+        this.beginMeasure();
+        IOUtils.copy(inputResp, tmpDownloadFile);
+        this.stopMeasure(service, context, "download");
+        
+        tmpDownloadFile.flush();
+        tmpDownloadFile.close();
     }
 
     private void checkResponse(HttpURLConnection httpConn, nServiceResults results) throws IOException {
@@ -137,6 +181,44 @@ public class nWebWatcher implements nServiceWatcher {
             "mykey=myvalue&mykey2=myvalue2");
         
         return props;
+    }
+
+    @Override
+    public ArrayList<nRrdDatasource> getRRDDatasources() {
+         ArrayList<nRrdDatasource> sources = new ArrayList<>();
+        
+        // - Watcher Response Time
+        nRrdDatasource srcResponseTime = new nRrdDatasource();
+        srcResponseTime.Heartbeat = 600;
+        srcResponseTime.MaxValue = Double.MAX_VALUE;
+        srcResponseTime.MinValue = 0;
+        srcResponseTime.Name = "response";
+        srcResponseTime.InternalName = "response";
+        srcResponseTime.Type = nRrdType.DERIVE;
+        
+        // - Watcher Connection Time
+        nRrdDatasource srcConnectionCounter = new nRrdDatasource();
+        srcConnectionCounter.Heartbeat = 600;
+        srcConnectionCounter.MaxValue = Double.MAX_VALUE;
+        srcConnectionCounter.MinValue = 0;
+        srcConnectionCounter.Name = "connect";
+        srcConnectionCounter.InternalName = "connect";
+        srcConnectionCounter.Type = nRrdType.DERIVE;
+        
+        // - Watcher Download Time
+        nRrdDatasource srcDownloadTime = new nRrdDatasource();
+        srcDownloadTime.Heartbeat = 600;
+        srcDownloadTime.MaxValue = Double.MAX_VALUE;
+        srcDownloadTime.MinValue = 0;
+        srcDownloadTime.Name = "download";
+        srcDownloadTime.InternalName = "download";
+        srcDownloadTime.Type = nRrdType.DERIVE;
+        
+        sources.add(srcResponseTime);
+        sources.add(srcConnectionCounter);
+        sources.add(srcDownloadTime);
+        
+        return sources;
     }
     
 }

@@ -25,8 +25,8 @@ import java.io.InputStreamReader;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.HashMap;
-import mInternauta.Nermis.Core.nRRDDatasource;
-import mInternauta.Nermis.Core.nRRDType;
+import mInternauta.Nermis.Core.nRrdDatasource;
+import mInternauta.Nermis.Core.nRrdType;
 import mInternauta.Nermis.Core.nService;
 import mInternauta.Nermis.Core.nServiceResults;
 import mInternauta.Nermis.Core.nServiceState;
@@ -36,7 +36,7 @@ import mInternauta.Nermis.Core.nServiceWatcherContext;
 /**
  * This watcher works together with Deep Inspector to examine whether a connection is functional.
  */
-public class nDeepWatcher implements nServiceWatcher {
+public class nDeepWatcher extends nServiceWatcher {
 
     @Override
     public String getName() {
@@ -62,7 +62,7 @@ public class nDeepWatcher implements nServiceWatcher {
         int recv = inFromServer.read();
         return i == recv;
     }
-
+    
     @Override
     public nServiceResults execute(nService service, nServiceWatcherContext context) {
         nServiceResults results = new nServiceResults();
@@ -70,22 +70,27 @@ public class nDeepWatcher implements nServiceWatcher {
 
         try {
             String hostname = service.Properties.get("Hostname");  
-            Socket socket = new Socket(hostname, 5050);  
-            
-            // TODO: Implement stopwatch for measurement
+
+            // -
+            this.beginMeasure();
+            Socket socket = new Socket(hostname, 5050);
             
             // -
             DataOutputStream outToServer = new DataOutputStream(socket.getOutputStream());  
-            BufferedReader inFromServer = new BufferedReader(new InputStreamReader(socket.getInputStream())); 
+            BufferedReader inFromServer = new BufferedReader(new InputStreamReader(socket.getInputStream()));            
             
-            // - Update the connection time
-            context.Rrd.UpdateRrd(service, "connection", 1);
+            this.stopMeasure(service, context, "connect");
             
             // - Send data to the server
+            this.beginMeasure();
+            
             boolean passed = sendCheck(14, outToServer, inFromServer);
             passed = passed && sendCheck(16, outToServer, inFromServer);
             passed = passed && sendCheck(16, outToServer, inFromServer);
             passed = passed && sendCheck(14, outToServer, inFromServer);
+                       
+            
+            this.stopMeasure(service, context, "response");
             
             // - 
             if(passed) {
@@ -107,24 +112,26 @@ public class nDeepWatcher implements nServiceWatcher {
     }
 
     @Override
-    public ArrayList<nRRDDatasource> getRRDDatasources() {
-        ArrayList<nRRDDatasource> sources = new ArrayList<>();
+    public ArrayList<nRrdDatasource> getRRDDatasources() {
+        ArrayList<nRrdDatasource> sources = new ArrayList<>();
         
         // - Deep Watcher Response Time
-        nRRDDatasource srcResponseTime = new nRRDDatasource();
+        nRrdDatasource srcResponseTime = new nRrdDatasource();
         srcResponseTime.Heartbeat = 600;
         srcResponseTime.MaxValue = Double.MAX_VALUE;
         srcResponseTime.MinValue = 0;
         srcResponseTime.Name = "response";
-        srcResponseTime.Type = nRRDType.DERIVE;
+        srcResponseTime.InternalName = "response";
+        srcResponseTime.Type = nRrdType.DERIVE;
         
         // - Deep Watcher Connection Time
-        nRRDDatasource srcConnectionCounter = new nRRDDatasource();
+        nRrdDatasource srcConnectionCounter = new nRrdDatasource();
         srcConnectionCounter.Heartbeat = 600;
         srcConnectionCounter.MaxValue = Double.MAX_VALUE;
         srcConnectionCounter.MinValue = 0;
         srcConnectionCounter.Name = "connect";
-        srcConnectionCounter.Type = nRRDType.DERIVE;
+        srcConnectionCounter.InternalName = "connect";
+        srcConnectionCounter.Type = nRrdType.DERIVE;
         
         sources.add(srcResponseTime);
         sources.add(srcConnectionCounter);

@@ -5,19 +5,15 @@
  */
 package mInternauta.Nermis.Builtin.Watchers;
 
-import java.io.IOException;
-import java.net.DatagramSocket;
-import java.net.InetAddress;
-import java.net.Socket;
-import java.net.SocketException;
-import java.net.UnknownHostException;
+import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import mInternauta.Nermis.Core.nRrdDatasource;
+import mInternauta.Nermis.Core.nRrdType;
 import mInternauta.Nermis.Core.nService;
 import mInternauta.Nermis.Core.nServiceResults;
 import mInternauta.Nermis.Core.nServiceState;
 import mInternauta.Nermis.Core.nServiceWatcher;
+import mInternauta.Nermis.Core.nServiceWatcherContext;
 import mInternauta.Nermis.Net.SocketUtils;
 
 /**
@@ -28,7 +24,7 @@ import mInternauta.Nermis.Net.SocketUtils;
  * Port => Server port 
  * Protocol => TCP , UDP
  */
-public class nPortWatcher implements nServiceWatcher {
+public class nPortWatcher extends nServiceWatcher {
 
     @Override
     public String getName() {
@@ -36,12 +32,14 @@ public class nPortWatcher implements nServiceWatcher {
     }
 
     @Override
-    public nServiceResults execute(nService service) {
+    public nServiceResults execute(nService service, nServiceWatcherContext context) {
         nServiceResults result = new nServiceResults();
         String hostname = service.Properties.get("Hostname");
         String protocol = service.Properties.get("Protocol");
         String plainPort = service.Properties.getOrDefault("Port", "1");
         int port = Integer.valueOf(plainPort);
+        
+        this.beginMeasure();
         
        if(protocol.equalsIgnoreCase("UDP")) {
            if(SocketUtils.checkUdpPort(hostname, port)) {
@@ -71,6 +69,8 @@ public class nPortWatcher implements nServiceWatcher {
            }
         }
        
+       this.stopMeasure(service, context, "response");
+       
         return result;
     }
 
@@ -96,6 +96,24 @@ public class nPortWatcher implements nServiceWatcher {
         props.put("Protocol", "Server Port Protocol (TCP or UDP)");
         
         return props;
+    }
+
+    @Override
+    public ArrayList<nRrdDatasource> getRRDDatasources() {
+        ArrayList<nRrdDatasource> sources = new ArrayList<>();
+        
+        // - Deep Watcher Response Time
+        nRrdDatasource srcResponseTime = new nRrdDatasource();
+        srcResponseTime.Heartbeat = 600;
+        srcResponseTime.MaxValue = Double.MAX_VALUE;
+        srcResponseTime.MinValue = 0;
+        srcResponseTime.Name = "response";
+        srcResponseTime.InternalName = "response";
+        srcResponseTime.Type = nRrdType.DERIVE;
+
+        sources.add(srcResponseTime);
+        
+        return sources;
     }
     
 }

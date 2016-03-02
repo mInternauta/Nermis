@@ -110,6 +110,11 @@ public class nWatcherJob implements Job {
                          }
                          
                          nApplication.getNofitier().NotifyServiceOffine(service, message);
+                         watcherContext.Rrd.UpdateRrd(service, "fails", 1);
+                     }
+                     else 
+                     {
+                         watcherContext.Rrd.UpdateRrd(service, "success", 1);
                      }
                 } else {
                     CurrentLogger.log(Level.SEVERE, "Invalid service settings for the current watcher: {0}", serviceName);

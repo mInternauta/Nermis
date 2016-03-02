@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016 mInternauta
+ * Copyright (C) 2015 mInternauta
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -16,34 +16,22 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  * 
  */
-package mInternauta.Nermis.Core;
+package mInternauta.Nermis;
+
+import mInternauta.Nermis.RRD.nRrdGraphManager;
+import org.quartz.Job;
+import org.quartz.JobExecutionContext;
+import org.quartz.JobExecutionException;
 
 /**
- * It represents a Data Source for RRD
+ * Rrd Graphs Job
  */
-public class nRRDDatasource {
-    /**
-     * RRD Name
-     */
-    public String Name;
-        
-    /**
-     * RRD Type
-     */
-    public nRRDType Type;
+public class nRrdGraphsJob implements Job {
+
+    @Override
+    public void execute(JobExecutionContext jec) throws JobExecutionException {
+        nRrdGraphManager manager = new nRrdGraphManager();
+        manager.update();
+    }
     
-    /**
-     * Check: http://oss.oetiker.ch/rrdtool/doc/rrdcreate.en.html#___top
-     */
-    public long Heartbeat;
-    
-    /**
-     * Min value for the data
-     */
-    public double MinValue;
-    
-    /**
-     * Max value for the data
-     */
-    public double MaxValue;
 }

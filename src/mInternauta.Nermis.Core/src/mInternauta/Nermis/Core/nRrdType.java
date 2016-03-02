@@ -22,7 +22,7 @@ package mInternauta.Nermis.Core;
  *
  * @author marcelo
  */
-public enum nRRDType {
+public enum nRrdType {
     /**
      * is for things like temperatures or number of people in a room or the value of a RedHat share.
      */

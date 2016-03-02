@@ -23,9 +23,13 @@ import mInternauta.Nermis.Core.nServiceResults;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.HashMap;
+import mInternauta.Nermis.Core.nRrdDatasource;
+import mInternauta.Nermis.Core.nRrdType;
 import mInternauta.Nermis.Core.nServiceState;
 import mInternauta.Nermis.Core.nServiceWatcher;
+import mInternauta.Nermis.Core.nServiceWatcherContext;
 
 /**
  * Analyzes a database with ODBC support is operational.
@@ -39,7 +43,7 @@ import mInternauta.Nermis.Core.nServiceWatcher;
  * Password => The database password
  * Hostname => The Server hostname and port (mysqlconnection.com:3399)
  */
-public class nOdbcWatcher implements nServiceWatcher {
+public class nOdbcWatcher extends nServiceWatcher {
 
     @Override
     public String getName() {
@@ -47,7 +51,7 @@ public class nOdbcWatcher implements nServiceWatcher {
     }
 
     @Override
-    public nServiceResults execute(nService service) {
+    public nServiceResults execute(nService service, nServiceWatcherContext context) {
         nServiceResults results = new nServiceResults();
         
         try {
@@ -58,8 +62,12 @@ public class nOdbcWatcher implements nServiceWatcher {
             String url = "jdbc:" + service.Properties.get("Provider") + "://"
                     + service.Properties.get("Hostname") + "/" + service.Properties.get("Database");
             
+            this.beginMeasure();
+            
             Connection conn = DriverManager.getConnection(url, 
                     service.Properties.get("Username"), service.Properties.get("Password"));
+            
+            this.stopMeasure(service, context, "connect");
             
             // Check the connection state
             if(conn.isValid(10)) {
@@ -106,6 +114,24 @@ public class nOdbcWatcher implements nServiceWatcher {
         props.put("Hostname", "The Server hostname and port (mysqlconnection.com:3399)");
   
         return props;
+    }
+
+    @Override
+    public ArrayList<nRrdDatasource> getRRDDatasources() {
+         ArrayList<nRrdDatasource> sources = new ArrayList<>();
+         
+        // - Deep Watcher Connection Time
+        nRrdDatasource srcConnectionCounter = new nRrdDatasource();
+        srcConnectionCounter.Heartbeat = 600;
+        srcConnectionCounter.MaxValue = Double.MAX_VALUE;
+        srcConnectionCounter.MinValue = 0;
+        srcConnectionCounter.Name = "connect";
+        srcConnectionCounter.InternalName = "connect";
+        srcConnectionCounter.Type = nRrdType.DERIVE;
+        
+        sources.add(srcConnectionCounter);
+        
+        return sources;
     }
     
 }
