@@ -30,7 +30,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
                 {PAGE_TITLE}
             </div>
             <div id="Body">
-                <form id="frmGraphs" action="#" method="POST">
+                <form id="frmGraphs" action="charts.do" method="POST">
                     <div id="GraphSelector">
                         {PAGE_GRAPH_SELECTOR}   
                         <select name="cbServices">
@@ -42,7 +42,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
                         <input type="submit" value="{REFRESH}" />
                     </div>
                     <div id="GraphContent">
-                        <img id="GraphImage" src="{IMG_SOURCE}" />
+                        <br />
+                        <img id="GraphImage" src="{IMG_SOURCE}" style="width: 98%;"/>
                     </div>
                 </form>
             </div>

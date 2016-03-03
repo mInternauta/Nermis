@@ -42,21 +42,23 @@ public class nServiceChartsHandler extends AbstractHandler {
     private final nTemplateManager templates = new nTemplateManager();
     private nService SelectedService;
     private nStatsGraphDef SelectedGraph;
+    private String cSelectedService;
+    private String cSelectedGraph;
 
     @Override
     public void handle(String string, Request rqst, HttpServletRequest hsr, HttpServletResponse hsr1) throws IOException, ServletException {
-        String selectedService = "";
-        String selectedGraph = "";
+       this.cSelectedService = "";
+       this.cSelectedGraph = "";
         
-        selectedService = checkPost(rqst, selectedService);
+        checkPost(rqst);
 
         // - Load the template
         String pageTemplate = loadTemplate();
-        pageTemplate = buildServiceList(selectedService, pageTemplate);
+        pageTemplate = buildServiceList(this.cSelectedService, pageTemplate);
 
         // - If service is selected, load the graphs list 
         if (SelectedService != null) {
-            pageTemplate = buildGraphList(selectedGraph, pageTemplate);
+            pageTemplate = buildGraphList(this.cSelectedGraph, pageTemplate);
         }
         
         // - If a graph is selected, load the image
@@ -87,23 +89,20 @@ public class nServiceChartsHandler extends AbstractHandler {
             }
             sbGraphsList.append("<option value=\"" + graph.Name + "\"" + selected + " >" + graph.Datasource + "-" + graph.Name + "</option>");
         }
-        pageTemplate = pageTemplate.replace("{GRAPHS_OPTIONS}", sbGraphsList.toString());
+        pageTemplate = pageTemplate.replace("{GRAPH_OPTIONS}", sbGraphsList.toString());
         return pageTemplate;
     }
 
-    private String checkPost(HttpServletRequest rqst, String selectedService) {
-        String selectedGraph;
-
+    private void checkPost(HttpServletRequest rqst) {
         if ("POST".equals(rqst.getMethod())) {            
             if (rqst.getParameter("cbServices") != null) {
-                selectedService = rqst.getParameter("cbServices");
+                this.cSelectedService = rqst.getParameter("cbServices");
             }
 
             if (rqst.getParameter("cbGraphs") != null) {
-                selectedGraph = rqst.getParameter("cbGraphs");
+                this.cSelectedGraph = rqst.getParameter("cbGraphs");
             }
         }
-        return selectedService;
     }
 
     private String loadTemplate() {
