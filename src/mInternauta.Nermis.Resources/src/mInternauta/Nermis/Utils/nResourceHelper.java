@@ -93,9 +93,7 @@ public class nResourceHelper {
     public static File BuildName(String kind, String name) {
         String path = BuildDirectory(kind);
         
-        path += name;
-        
-        
+        path += name;   
         
         if(kind.equalsIgnoreCase("Settings")) {
             path += ".xml";

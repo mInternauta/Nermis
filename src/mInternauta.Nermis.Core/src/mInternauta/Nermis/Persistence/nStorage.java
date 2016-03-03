@@ -39,13 +39,17 @@ public class nStorage {
      * @return 
      */
     public static nStorage getInstance() {
-        if(instance == null) {
-            instance = new nStorage();
-        }
-        return instance;
+        return new nStorage();
     }
+    
+    public nSerializerOptions Options;
+    private nContainerSerializer serializer;
+    
     // - nStorage can have only a single instance, otherwise the cached objects will conflict.
-    private nStorage() {
+    private nStorage() {        
+        this.Options = new nSerializerOptions();
+        this.Options.BinaryMode = false;
+        this.serializer = new nContainerSerializer();
         this.load();
     }
     
@@ -87,7 +91,8 @@ public class nStorage {
         try {
             OutputStream stream = nResourceHelper.WriteResource(name, kind);
             
-            nContainerSerializer.Save(container, stream);
+            serializer.setOptions(Options);
+            serializer.Save(container, stream);
             
             stream.flush();
             stream.close();
@@ -111,7 +116,8 @@ public class nStorage {
         try {
             InputStream stream = nResourceHelper.ReadResource(name, kind);
             
-            container = nContainerSerializer.Load(stream);
+            serializer.setOptions(Options);
+            container = serializer.Load(stream);
             
             stream.close();
         } catch (Exception ex) {

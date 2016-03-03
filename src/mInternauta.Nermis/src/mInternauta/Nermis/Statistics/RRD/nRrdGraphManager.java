@@ -16,8 +16,9 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  * 
  */
-package mInternauta.Nermis.RRD;
+package mInternauta.Nermis.Statistics.RRD;
 
+import mInternauta.Nermis.Core.IStatsGraphManager;
 import java.awt.Color;
 import java.io.File;
 import java.io.IOException;
@@ -25,9 +26,8 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
-import java.util.UUID;
 import java.util.logging.Level;
-import mInternauta.Nermis.Core.nRrdDatasource;
+import mInternauta.Nermis.Core.nStatsDatasource;
 import mInternauta.Nermis.Core.nService;
 import mInternauta.Nermis.Core.nServiceWatcher;
 import mInternauta.Nermis.Persistence.nServiceHelper;
@@ -44,42 +44,46 @@ import org.rrd4j.graph.RrdGraphDef;
 /**
  * Manage all the Rrd Graph Cache
  */
-public class nRrdGraphManager {
+public class nRrdGraphManager extends IStatsGraphManager {
     public static int IMG_WIDTH = 640;
     public static int IMG_HEIGHT = 128;
     
-    public void update()
+    private Calendar calendar = Calendar.getInstance();
+    
+    /**
+     * Update the Stats Graphs
+     */
+    @Override
+    public void Update()
     {
         ArrayList<nService> services = nServiceHelper.AllServices();
         CurrentLogger.log(Level.INFO, "Updating the RRD Graphs...");
         
         Date baseDate = new Date();
-        Calendar calendar = Calendar.getInstance();
         
         for(nService service : services) {
             nServiceWatcher watcher = nController.getWatcherFor(service);
             
-            for(nRrdDatasource ds : watcher.getRRDDatasources()) {
-                genFromCalendar(calendar, baseDate, 1, service, ds);
+            for(nStatsDatasource ds : watcher.getStatsDatasources()) {
+                genFromCalendar(baseDate, 1, service, ds);
                 
-                genFromCalendar(calendar, baseDate, 4, service, ds);
+                genFromCalendar(baseDate, 4, service, ds);
                 
-                genFromCalendar(calendar, baseDate, 8, service, ds);
+                genFromCalendar(baseDate, 8, service, ds);
                 
-                genFromCalendar(calendar, baseDate, 24, service, ds);
+                genFromCalendar(baseDate, 24, service, ds);
                 
-                genFromCalendar(calendar, baseDate, 48, service, ds);
+                genFromCalendar(baseDate, 48, service, ds);
             }
         }
     }
 
-    private void genFromCalendar(Calendar calendar, Date baseDate, int hours, nService service, nRrdDatasource ds) {
+    private void genFromCalendar(Date baseDate, int hours, nService service, nStatsDatasource ds) {
         calendar.setTime(baseDate);
         calendar.add(Calendar.HOUR_OF_DAY, hours);
+        long endTime = calendar.getTime().getTime();
         
-        Date endDate = calendar.getTime();
-        
-        this.generate(service, ds, baseDate.getTime(), endDate.getTime(), String.valueOf(hours) + "hours");
+        this.generate(service, ds, baseDate.getTime(), endTime, String.valueOf(hours) + "hours");
     }
     
     /**
@@ -90,12 +94,12 @@ public class nRrdGraphManager {
      * @param endTime End Time
      * @return  
      */
-    public File generate(nService service, nRrdDatasource ds, long startTime, long endTime, String graphName)
+    public File generate(nService service, nStatsDatasource ds, long startTime, long endTime, String graphName)
     {
         File pathGraph = null;
         
         try {
-            pathGraph = getGraphFile(service, ds, graphName);
+            pathGraph = getGraphFile(service, ds.InternalName, graphName);
             
             // - Open the database
             File pathDb = nResourceHelper.BuildName("RRD", service.Name);
@@ -146,12 +150,6 @@ public class nRrdGraphManager {
             CurrentLogger.log(Level.SEVERE, null, ex);
         }
         
-        return pathGraph;
-    }
-
-    private File getGraphFile(nService service, nRrdDatasource ds, String graphName) {
-        File pathGraph;
-        pathGraph = nResourceHelper.BuildName("Graphs", service.Name + "_" + ds.InternalName + "_" + graphName);
         return pathGraph;
     }
 }

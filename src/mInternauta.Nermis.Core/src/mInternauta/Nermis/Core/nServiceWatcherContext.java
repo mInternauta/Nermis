@@ -18,12 +18,65 @@
  */
 package mInternauta.Nermis.Core;
 
+import java.util.HashMap;
+import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import org.apache.commons.lang3.time.StopWatch;
+
 /**
  * Current Watcher Context
  */
 public class nServiceWatcherContext {
+    private Map<String,Double> StatsData = new HashMap<>();
+    private StopWatch MeasurementStopwatch = new StopWatch();    
+    
     /**
-     * Rrd Manager
+     * Current Logger
      */
-    public IRrdManager Rrd;
+    public Logger Logger;
+    
+    /**
+     * Sync the rrd data
+     * @param service
+     * @param rrdManager 
+     */
+    public void UpdateStats(nService service, IStatsDataCollector rrdManager)
+    {
+        rrdManager.Update(service, this.StatsData);
+    }       
+    
+    /**
+     * Set a rrd data
+     * @param dsName
+     * @param value 
+     */
+    public void setStatsData(String dsName, double value)
+    {
+        this.StatsData.put(dsName, value);
+    }
+    
+    /**
+     * Stop the RRD Measurement
+     * @param dsName 
+     */
+    public void stopMeasure(String dsName)
+    {           
+        // Stop the Connection Measurement
+        this.MeasurementStopwatch.stop();
+            
+        // - Update the connection time
+        double value = this.MeasurementStopwatch.getTime();
+        this.StatsData.put(dsName, value);
+        
+        Logger.log(Level.INFO, "Updating statistics: {0} to {1}", new Object[]{dsName, String.valueOf(value)});
+        
+        this.MeasurementStopwatch.reset();
+    }
+    
+    public void beginMeasure()
+    {
+        // Start the Connection Measurement
+        this.MeasurementStopwatch.start();    
+    }
 }

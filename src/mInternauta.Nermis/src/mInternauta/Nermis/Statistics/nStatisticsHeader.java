@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016 mInternauta
+ * Copyright (C) 2015 mInternauta
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -16,40 +16,36 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  * 
  */
-package mInternauta.Nermis.Core;
+package mInternauta.Nermis.Statistics;
+
+import mInternauta.Nermis.Core.nStatsDataType;
 
 /**
- * It represents a Data Source for RRD
+ * Header data for Statistics
  */
-public class nRrdDatasource {
+public class nStatisticsHeader {
     /**
-     * RRD Internal Name
+     * Data Source
      */
-    public String InternalName;
-    
-    
-    /**
-     * RRD Name
-     */
-    public String Name;
-        
-    /**
-     * RRD Type
-     */
-    public nRrdType Type;
+    public String Datasource;
     
     /**
-     * Check: http://oss.oetiker.ch/rrdtool/doc/rrdcreate.en.html#___top
+     * Data Type
      */
-    public long Heartbeat;
+    public nStatsDataType Type;
     
     /**
-     * Min value for the data
+     * Min Value
      */
     public double MinValue;
     
     /**
-     * Max value for the data
+     * Max Value
      */
     public double MaxValue;
+    
+    /**
+     * Description
+     */
+    public String Description;
 }

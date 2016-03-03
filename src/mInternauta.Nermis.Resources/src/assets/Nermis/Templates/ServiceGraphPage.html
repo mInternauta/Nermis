@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<!--
+Copyright (C) 2015 mInternauta
+
+This program is free software; you can redistribute it and/or
+modify it under the terms of the GNU General Public License
+as published by the Free Software Foundation; either version 2
+of the License, or (at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program; if not, write to the Free Software
+Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+
+-->
+<html>
+    <head>
+        <title>{PAGE_TITLE}</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link rel="stylesheet" href="/nermis.css" type="text/css">
+    </head>
+    <body>
+        <div id="ServiceStatus">
+            <div id="Title">
+                {PAGE_TITLE}
+            </div>
+            <div id="Body">
+                <form id="frmGraphs" action="#" method="POST">
+                    <div id="GraphSelector">
+                        {PAGE_GRAPH_SELECTOR}   
+                        <select name="cbServices">
+                            {SERVICE_OPTIONS}
+                        </select> -
+                        <select name="cbGraphs">
+                            {GRAPH_OPTIONS}
+                        </select>
+                        <input type="submit" value="{REFRESH}" />
+                    </div>
+                    <div id="GraphContent">
+                        <img id="GraphImage" src="{IMG_SOURCE}" />
+                    </div>
+                </form>
+            </div>
+            <div id="Footer">
+                <img src="Icon.png" alt="Nirmes" />
+                Nermis Remote Service Monitoring - Copyright (C) 2016
+            </div>
+        </div>
+    </body>
+</html>

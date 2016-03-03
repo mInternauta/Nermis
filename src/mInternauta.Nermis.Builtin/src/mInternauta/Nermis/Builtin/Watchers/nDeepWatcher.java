@@ -25,8 +25,9 @@ import java.io.InputStreamReader;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.HashMap;
-import mInternauta.Nermis.Core.nRrdDatasource;
-import mInternauta.Nermis.Core.nRrdType;
+import mInternauta.Nermis.Configs.nConfigHelper;
+import mInternauta.Nermis.Core.nStatsDatasource;
+import mInternauta.Nermis.Core.nStatsDataType;
 import mInternauta.Nermis.Core.nService;
 import mInternauta.Nermis.Core.nServiceResults;
 import mInternauta.Nermis.Core.nServiceState;
@@ -72,17 +73,17 @@ public class nDeepWatcher extends nServiceWatcher {
             String hostname = service.Properties.get("Hostname");  
 
             // -
-            this.beginMeasure();
+            context.beginMeasure();
             Socket socket = new Socket(hostname, 5050);
             
             // -
             DataOutputStream outToServer = new DataOutputStream(socket.getOutputStream());  
             BufferedReader inFromServer = new BufferedReader(new InputStreamReader(socket.getInputStream()));            
             
-            this.stopMeasure(service, context, "connect");
+            context.stopMeasure("connect");
             
             // - Send data to the server
-            this.beginMeasure();
+            context.beginMeasure();
             
             boolean passed = sendCheck(14, outToServer, inFromServer);
             passed = passed && sendCheck(16, outToServer, inFromServer);
@@ -90,7 +91,7 @@ public class nDeepWatcher extends nServiceWatcher {
             passed = passed && sendCheck(14, outToServer, inFromServer);
                        
             
-            this.stopMeasure(service, context, "response");
+            context.stopMeasure("response");
             
             // - 
             if(passed) {
@@ -112,26 +113,26 @@ public class nDeepWatcher extends nServiceWatcher {
     }
 
     @Override
-    public ArrayList<nRrdDatasource> getRRDDatasources() {
-        ArrayList<nRrdDatasource> sources = new ArrayList<>();
+    public ArrayList<nStatsDatasource> getStatsDatasources() {
+        ArrayList<nStatsDatasource> sources = new ArrayList<>();
         
         // - Deep Watcher Response Time
-        nRrdDatasource srcResponseTime = new nRrdDatasource();
+        nStatsDatasource srcResponseTime = new nStatsDatasource();
         srcResponseTime.Heartbeat = 600;
         srcResponseTime.MaxValue = Double.MAX_VALUE;
         srcResponseTime.MinValue = 0;
-        srcResponseTime.Name = "response";
+        srcResponseTime.Name = nConfigHelper.getDisplayLanguage().getProperty("DS_RESPONSE");
         srcResponseTime.InternalName = "response";
-        srcResponseTime.Type = nRrdType.DERIVE;
+        srcResponseTime.Type = nStatsDataType.DERIVE;
         
         // - Deep Watcher Connection Time
-        nRrdDatasource srcConnectionCounter = new nRrdDatasource();
+        nStatsDatasource srcConnectionCounter = new nStatsDatasource();
         srcConnectionCounter.Heartbeat = 600;
         srcConnectionCounter.MaxValue = Double.MAX_VALUE;
         srcConnectionCounter.MinValue = 0;
-        srcConnectionCounter.Name = "connect";
+        srcConnectionCounter.Name = nConfigHelper.getDisplayLanguage().getProperty("DS_CONNECT");
         srcConnectionCounter.InternalName = "connect";
-        srcConnectionCounter.Type = nRrdType.DERIVE;
+        srcConnectionCounter.Type = nStatsDataType.DERIVE;
         
         sources.add(srcResponseTime);
         sources.add(srcConnectionCounter);

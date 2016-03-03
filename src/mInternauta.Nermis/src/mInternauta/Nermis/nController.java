@@ -28,8 +28,6 @@ import mInternauta.Nermis.Core.nService;
 import mInternauta.Nermis.Core.nServiceWatcher;
 import mInternauta.Nermis.Configs.nConfigHelper;
 import mInternauta.Nermis.Configs.nConfiguration;
-import mInternauta.Nermis.Core.IRrdManager;
-import mInternauta.Nermis.RRD.nRrdManager;
 import static mInternauta.Nermis.Utils.nApplication.CurrentLogger;
 import static mInternauta.Nermis.Utils.nApplication.Notifiers;
 import static mInternauta.Nermis.Utils.nApplication.Watchers;
@@ -44,6 +42,10 @@ import org.quartz.SimpleScheduleBuilder;
 import org.quartz.SimpleTrigger;
 import org.quartz.TriggerBuilder;
 import org.quartz.impl.StdSchedulerFactory;
+import mInternauta.Nermis.Core.IStatsGraphManager;
+import mInternauta.Nermis.Core.IStatsDataCollector;
+import mInternauta.Nermis.Statistics.nStatsDataCollector;
+import mInternauta.Nermis.Statistics.nStatsGraphManager;
 
 /**
  * Nermis Main Controller
@@ -54,7 +56,8 @@ public class nController {
     private Scheduler scheduler;    
     private nWebServer webServer;
     
-    private static nRrdManager rrdManager;
+    private static IStatsDataCollector statsManager;
+    private static IStatsGraphManager statsGraphManager;
     
     static {
         // Load all Watchers
@@ -81,11 +84,19 @@ public class nController {
     }
     
     /**
-     * Return the RRD Manager instance 
+     * Return the Statistics Data Manager instance 
      * @return 
      */
-    public static IRrdManager getRrdManager() {
-        return rrdManager;
+    public static IStatsDataCollector getStatsManager() {
+        return statsManager;
+    }
+    
+      /**
+     * Return the Statistics Graph Manager instance 
+     * @return 
+     */
+    public static IStatsGraphManager getStatsGraphManager() {
+        return statsGraphManager;
     }
     
     /**
@@ -132,7 +143,7 @@ public class nController {
             loadAllJobs();
                  
             // -
-            setupRrd();
+            setupStats();
             
             // - Start all Jobs
             scheduler.startDelayed(5);
@@ -147,21 +158,28 @@ public class nController {
         }
     }
 
-    private void setupRrd() throws IOException, SchedulerException {
-        // -  Load RRD Graphs
-        CurrentLogger.log(Level.INFO, "Configuring all rrd data... ");
-        rrdManager = new nRrdManager();
+    private void setupStats() throws IOException, SchedulerException {
+        // -  Load Stats Graphs
+        CurrentLogger.log(Level.INFO, "Configuring all statistics data... ");
+        
+        // - Rrd Data Manager (Disabled, cant make work now)        
+        // * statsManager = new nRrdManager();
+                
+        // - Builtin Stats Manager
+        statsManager = new nStatsDataCollector();
+        statsGraphManager = new nStatsGraphManager();
+        
         for(nService service :  nStorage.getInstance().Services) {
-            rrdManager.CreateRrd(service);
+            statsManager.Create(service);
         }
         
-        setupRrdJob();
+        setupStatsJob();
     }
 
-    private void setupRrdJob() throws SchedulerException {
+    private void setupStatsJob() throws SchedulerException {
         // - Setup Rrd Job
-        JobDetail job = JobBuilder.newJob(nRrdGraphsJob.class)
-                .withIdentity("Job_RRDGraphs", "RRD")
+        JobDetail job = JobBuilder.newJob(nStatsGraphsJob.class)
+                .withIdentity("Job_StatsGraphs", "Stats")
                 .build();
         
         SimpleScheduleBuilder schedule = SimpleScheduleBuilder.simpleSchedule()
@@ -171,7 +189,7 @@ public class nController {
         // - Build the Trigger
         SimpleTrigger trigger = TriggerBuilder
                 .newTrigger()
-                .withIdentity("Tg_RRDGraphs", "RRD")
+                .withIdentity("Tg_StatsGraphs", "Stats")
                 .startAt(new Date())
                 .withSchedule(schedule)
                 .build();

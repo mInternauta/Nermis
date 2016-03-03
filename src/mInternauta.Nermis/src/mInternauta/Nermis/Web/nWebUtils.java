@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016 mInternauta
+ * Copyright (C) 2015 mInternauta
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -16,27 +16,21 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  * 
  */
-package mInternauta.Nermis.Core;
+package mInternauta.Nermis.Web;
+
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import org.apache.commons.io.IOUtils;
+import org.apache.commons.net.util.Base64;
 
 /**
- *
- * @author marcelo
+ * Web Utilities
  */
-public enum nRrdType {
-    /**
-     * is for things like temperatures or number of people in a room or the value of a RedHat share.
-     */
-    GAUGE, 
-    /**
-     * is for continuous incrementing counters like the ifInOctets counter in a router
-     */
-    COUNTER, 
-    /**
-     * will store the derivative of the line going from the last to the current value of the data source. This can be useful for gauges, for example, to measure the rate of people entering or leaving a room.
-     */
-    DERIVE, 
-    /**
-     * is for counters which get reset upon reading. This is used for fast counters which tend to overflow
-     */
-    ABSOLUTE
+public class nWebUtils {
+    public static String ImageToBase64(File image) throws IOException {
+        byte[] imageBytes = IOUtils.toByteArray(new FileInputStream(image));
+        String base64 = Base64.encodeBase64String(imageBytes);
+        return base64;
+    }
 }

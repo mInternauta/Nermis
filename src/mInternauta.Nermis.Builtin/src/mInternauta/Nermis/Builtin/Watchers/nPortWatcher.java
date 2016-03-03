@@ -7,8 +7,9 @@ package mInternauta.Nermis.Builtin.Watchers;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import mInternauta.Nermis.Core.nRrdDatasource;
-import mInternauta.Nermis.Core.nRrdType;
+import mInternauta.Nermis.Configs.nConfigHelper;
+import mInternauta.Nermis.Core.nStatsDatasource;
+import mInternauta.Nermis.Core.nStatsDataType;
 import mInternauta.Nermis.Core.nService;
 import mInternauta.Nermis.Core.nServiceResults;
 import mInternauta.Nermis.Core.nServiceState;
@@ -39,7 +40,7 @@ public class nPortWatcher extends nServiceWatcher {
         String plainPort = service.Properties.getOrDefault("Port", "1");
         int port = Integer.valueOf(plainPort);
         
-        this.beginMeasure();
+        context.beginMeasure();
         
        if(protocol.equalsIgnoreCase("UDP")) {
            if(SocketUtils.checkUdpPort(hostname, port)) {
@@ -69,7 +70,7 @@ public class nPortWatcher extends nServiceWatcher {
            }
         }
        
-       this.stopMeasure(service, context, "response");
+       context.stopMeasure("response");
        
         return result;
     }
@@ -99,17 +100,17 @@ public class nPortWatcher extends nServiceWatcher {
     }
 
     @Override
-    public ArrayList<nRrdDatasource> getRRDDatasources() {
-        ArrayList<nRrdDatasource> sources = new ArrayList<>();
+    public ArrayList<nStatsDatasource> getStatsDatasources() {
+        ArrayList<nStatsDatasource> sources = new ArrayList<>();
         
         // - Deep Watcher Response Time
-        nRrdDatasource srcResponseTime = new nRrdDatasource();
+        nStatsDatasource srcResponseTime = new nStatsDatasource();
         srcResponseTime.Heartbeat = 600;
         srcResponseTime.MaxValue = Double.MAX_VALUE;
         srcResponseTime.MinValue = 0;
-        srcResponseTime.Name = "response";
+        srcResponseTime.Name = nConfigHelper.getDisplayLanguage().getProperty("DS_RESPONSE");
         srcResponseTime.InternalName = "response";
-        srcResponseTime.Type = nRrdType.DERIVE;
+        srcResponseTime.Type = nStatsDataType.DERIVE;
 
         sources.add(srcResponseTime);
         

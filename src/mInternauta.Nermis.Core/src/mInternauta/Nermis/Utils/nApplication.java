@@ -37,7 +37,7 @@ public final class nApplication {
     /**
      * Global logger for the Nermis 
      */
-    public static final Logger CurrentLogger = Logger.getLogger("NermisLogger");   
+    public static Logger CurrentLogger;   
     
     /**
      * Loaded Watchers
@@ -80,20 +80,32 @@ public final class nApplication {
         setupLogger();
     }
     
-    private static void setupLogger() 
-    {       
-        try {
+    public static Logger CreateLogger(String logName, boolean notOutConsole)
+    {
+        Logger cLogger = null;
+        
+         try {
             // Setup the Logger
-            CurrentLogger.setLevel(Level.ALL);
-            CurrentLogger.setUseParentHandlers(false);
-            CurrentLogger.addHandler(new ConsoleHandler());
-            FileHandler fileLog = new FileHandler(nResourceHelper.BuildName("Logs", "Global").getAbsolutePath(), 1000024, 5);
+            cLogger = Logger.getLogger("Nermis-" + logName);
+            cLogger.setLevel(Level.ALL);
+            cLogger.setUseParentHandlers(false);
+            
+            if(notOutConsole == false) {
+                cLogger.addHandler(new ConsoleHandler());
+            }
+            
+            FileHandler fileLog = new FileHandler(nResourceHelper.BuildName("Logs", logName).getAbsolutePath(), 1000024, 5);
             fileLog.setFormatter(new SimpleFormatter());
-            CurrentLogger.addHandler(fileLog);
-        } catch (IOException ex) {
-            Logger.getLogger(nApplication.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (SecurityException ex) {
+            cLogger.addHandler(fileLog);
+        } catch (IOException | SecurityException ex) {
             Logger.getLogger(nApplication.class.getName()).log(Level.SEVERE, null, ex);
         }
+         
+        return cLogger;
+    }
+    
+    private static void setupLogger() 
+    {       
+       CurrentLogger = CreateLogger("Global", false);
     }
 }

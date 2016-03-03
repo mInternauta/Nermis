@@ -85,6 +85,7 @@ public class nWebServer {
                
         nWebDefaultHandler mainHandler = new nWebDefaultHandler(this.webServerPath);
         mainHandler.addMapping("/status.do", new nServicePageHandler());        
+        mainHandler.addMapping("/charts.do", new nServiceChartsHandler());        
         
         ctxServer.setWelcomeFiles(new String[] {"index.html"});
         ctxServer.setHandler(mainHandler);

@@ -19,6 +19,8 @@
 package mInternauta.Nermis.Builtin.Watchers;
 
 import java.io.DataOutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -29,8 +31,9 @@ import java.net.URLConnection;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
-import mInternauta.Nermis.Core.nRrdDatasource;
-import mInternauta.Nermis.Core.nRrdType;
+import mInternauta.Nermis.Configs.nConfigHelper;
+import mInternauta.Nermis.Core.nStatsDatasource;
+import mInternauta.Nermis.Core.nStatsDataType;
 import mInternauta.Nermis.Core.nService;
 import mInternauta.Nermis.Core.nServiceResults;
 import mInternauta.Nermis.Core.nServiceState;
@@ -66,9 +69,9 @@ public class nWebWatcher extends nServiceWatcher {
             String plainUrl = service.Properties.get("Protocol") + "://" + service.Properties.get("Url");
             URL url = new URL(plainUrl);
             
-            this.beginMeasure();
+            context.beginMeasure();
             URLConnection conn = url.openConnection();
-            this.stopMeasure(service, context, "connect");
+            context.stopMeasure("connect");
             
             HttpURLConnection httpConn = (HttpURLConnection)conn;
             
@@ -76,7 +79,7 @@ public class nWebWatcher extends nServiceWatcher {
             
             if(method.equalsIgnoreCase("Post")) // Send the post data
             {
-                this.beginMeasure();
+                context.beginMeasure();
                 httpConn.setRequestMethod("POST");
                 conn.setDoOutput(true);
                 
@@ -89,7 +92,7 @@ public class nWebWatcher extends nServiceWatcher {
 
                 checkResponse(httpConn, results);
                 
-                this.stopMeasure(service, context, "response");
+                context.stopMeasure("response");
                               
                 // Download the Response                
                 if(results.State == nServiceState.ONLINE) {
@@ -98,11 +101,11 @@ public class nWebWatcher extends nServiceWatcher {
             } 
             else if(method.equalsIgnoreCase("Get")) // Try fetch the response
             {
-                this.beginMeasure();
+                context.beginMeasure();
                 httpConn.setRequestMethod("GET");       
                 
                 checkResponse(httpConn, results);
-                this.stopMeasure(service, context, "response");
+                context.stopMeasure("response");
                 
                 if(results.State == nServiceState.ONLINE) {
                     downloadResp(httpConn, service, context);                
@@ -130,15 +133,18 @@ public class nWebWatcher extends nServiceWatcher {
     private void downloadResp(HttpURLConnection httpConn, nService service, nServiceWatcherContext context) throws IOException, Exception {
         // Download the page
         String tmpWebDFile = "tempWebD_" + String.valueOf(new Date().getTime()) + ".tmp";
-        OutputStream tmpDownloadFile = nResourceHelper.WriteResource(tmpWebDFile, "Temp");
+        File tmpFile = nResourceHelper.BuildName("Temp",tmpWebDFile);
+        OutputStream tmpDownloadFile = new FileOutputStream(tmpFile);
         InputStream inputResp = httpConn.getInputStream();
         
-        this.beginMeasure();
+        context.beginMeasure();
         IOUtils.copy(inputResp, tmpDownloadFile);
-        this.stopMeasure(service, context, "download");
+        context.stopMeasure("download");
         
         tmpDownloadFile.flush();
         tmpDownloadFile.close();
+        
+        tmpFile.delete();
     }
 
     private void checkResponse(HttpURLConnection httpConn, nServiceResults results) throws IOException {
@@ -184,35 +190,35 @@ public class nWebWatcher extends nServiceWatcher {
     }
 
     @Override
-    public ArrayList<nRrdDatasource> getRRDDatasources() {
-         ArrayList<nRrdDatasource> sources = new ArrayList<>();
+    public ArrayList<nStatsDatasource> getStatsDatasources() {
+         ArrayList<nStatsDatasource> sources = new ArrayList<>();
         
         // - Watcher Response Time
-        nRrdDatasource srcResponseTime = new nRrdDatasource();
+        nStatsDatasource srcResponseTime = new nStatsDatasource();
         srcResponseTime.Heartbeat = 600;
         srcResponseTime.MaxValue = Double.MAX_VALUE;
         srcResponseTime.MinValue = 0;
-        srcResponseTime.Name = "response";
+        srcResponseTime.Name = nConfigHelper.getDisplayLanguage().getProperty("DS_RESPONSE");
         srcResponseTime.InternalName = "response";
-        srcResponseTime.Type = nRrdType.DERIVE;
+        srcResponseTime.Type = nStatsDataType.DERIVE;
         
         // - Watcher Connection Time
-        nRrdDatasource srcConnectionCounter = new nRrdDatasource();
+        nStatsDatasource srcConnectionCounter = new nStatsDatasource();
         srcConnectionCounter.Heartbeat = 600;
         srcConnectionCounter.MaxValue = Double.MAX_VALUE;
         srcConnectionCounter.MinValue = 0;
-        srcConnectionCounter.Name = "connect";
+        srcConnectionCounter.Name = nConfigHelper.getDisplayLanguage().getProperty("DS_CONNECT");
         srcConnectionCounter.InternalName = "connect";
-        srcConnectionCounter.Type = nRrdType.DERIVE;
+        srcConnectionCounter.Type = nStatsDataType.DERIVE;
         
         // - Watcher Download Time
-        nRrdDatasource srcDownloadTime = new nRrdDatasource();
+        nStatsDatasource srcDownloadTime = new nStatsDatasource();
         srcDownloadTime.Heartbeat = 600;
         srcDownloadTime.MaxValue = Double.MAX_VALUE;
         srcDownloadTime.MinValue = 0;
-        srcDownloadTime.Name = "download";
+        srcDownloadTime.Name = nConfigHelper.getDisplayLanguage().getProperty("DS_DOWNLOAD");
         srcDownloadTime.InternalName = "download";
-        srcDownloadTime.Type = nRrdType.DERIVE;
+        srcDownloadTime.Type = nStatsDataType.DERIVE;
         
         sources.add(srcResponseTime);
         sources.add(srcConnectionCounter);

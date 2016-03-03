@@ -16,22 +16,24 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  * 
  */
-package mInternauta.Nermis;
-
-import mInternauta.Nermis.RRD.nRrdGraphManager;
-import org.quartz.Job;
-import org.quartz.JobExecutionContext;
-import org.quartz.JobExecutionException;
+package mInternauta.Nermis.Statistics;
 
 /**
- * Rrd Graphs Job
+ * Statistics Data for a Service
  */
-public class nRrdGraphsJob implements Job {
-
-    @Override
-    public void execute(JobExecutionContext jec) throws JobExecutionException {
-        nRrdGraphManager manager = new nRrdGraphManager();
-        manager.update();
-    }
+public class nStatisticsData {
+    /**
+     * Statistics Time
+     */
+    public long Time;
     
+    /**
+     * Datasource Name
+     */
+    public String DataSource;
+        
+    /**
+     * Datasource Value
+     */
+    public double Value;
 }

@@ -16,11 +16,15 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  * 
  */
-package mInternauta.Nermis.Core;
+package mInternauta.Nermis.Persistence;
 
 /**
- * Interface for the Rrd Manager
+ * Container Serializer Options
  */
-public interface IRrdManager {
-    public void UpdateRrd(nService service, String dataSource, double value);
+public class nSerializerOptions {
+    /**
+     * Binary Mode
+     * If true serialize to a binary otherwise serialize to XML
+     */
+    public boolean BinaryMode = false;
 }

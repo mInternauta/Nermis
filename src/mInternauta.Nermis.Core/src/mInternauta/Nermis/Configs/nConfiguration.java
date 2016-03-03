@@ -51,5 +51,5 @@ public class nConfiguration {
     /**
      * Installed Jars
      */
-    public HashMap<String, String> IncludedJars;
+    public HashMap<String, String> IncludedJars;   
 }

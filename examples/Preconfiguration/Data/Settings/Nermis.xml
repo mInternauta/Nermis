@@ -18,12 +18,26 @@
      </void>
     </void>
     <void class="mInternauta.Nermis.Configs.nConfiguration" method="getField">
-     <string>WatchersJars</string>
+     <string>Notifier</string>
+     <void method="set">
+      <object idref="nConfiguration0"/>
+      <string></string>
+     </void>
+    </void>
+    <void class="mInternauta.Nermis.Configs.nConfiguration" method="getField">
+     <string>NotifierProperties</string>
+     <void method="set">
+      <object idref="nConfiguration0"/>
+      <object class="java.util.HashMap"/>
+     </void>
+    </void>
+    <void class="mInternauta.Nermis.Configs.nConfiguration" method="getField">
+     <string>IncludedJars</string>
      <void method="set">
       <object idref="nConfiguration0"/>
       <object class="java.util.HashMap">
        <void method="put">
-        <string>Builtin Watchers</string>
+        <string>Builtin Components</string>
         <string>./lib/mInternauta.Nermis.Builtin</string>
        </void>
       </object>

@@ -21,8 +21,9 @@ package mInternauta.Nermis.Builtin.Watchers;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
-import mInternauta.Nermis.Core.nRrdDatasource;
-import mInternauta.Nermis.Core.nRrdType;
+import mInternauta.Nermis.Configs.nConfigHelper;
+import mInternauta.Nermis.Core.nStatsDatasource;
+import mInternauta.Nermis.Core.nStatsDataType;
 import mInternauta.Nermis.Core.nService;
 import mInternauta.Nermis.Core.nServiceResults;
 import mInternauta.Nermis.Core.nServiceState;
@@ -62,16 +63,16 @@ public class nFtpWatcher extends nServiceWatcher {
             
             
             // -------
-            this.beginMeasure();            
+            context.beginMeasure();            
 
             // Try to connect
             ftp.connect(hostname, port);
             
-            this.stopMeasure(service, context, "connect");
+            context.stopMeasure("connect");
             // -------
                         
             // -------
-            this.beginMeasure();
+            context.beginMeasure();
             // Try to login
             if(ftp.login(user, passwd)) {
                 result.State = nServiceState.ONLINE;
@@ -79,7 +80,7 @@ public class nFtpWatcher extends nServiceWatcher {
                 result.Message = "Invalid login!";
                 result.State = nServiceState.OFFLINE;
             }
-            this.stopMeasure(service, context, "response");
+            context.stopMeasure("response");
             // -------
             
             // Disconnect
@@ -118,26 +119,26 @@ public class nFtpWatcher extends nServiceWatcher {
     }
 
     @Override
-    public ArrayList<nRrdDatasource> getRRDDatasources() {
-        ArrayList<nRrdDatasource> sources = new ArrayList<>();
+    public ArrayList<nStatsDatasource> getStatsDatasources() {
+        ArrayList<nStatsDatasource> sources = new ArrayList<>();
         
         // - Deep Watcher Response Time
-        nRrdDatasource srcResponseTime = new nRrdDatasource();
+        nStatsDatasource srcResponseTime = new nStatsDatasource();
         srcResponseTime.Heartbeat = 600;
         srcResponseTime.MaxValue = Double.MAX_VALUE;
         srcResponseTime.MinValue = 0;
-        srcResponseTime.Name = "response";
+        srcResponseTime.Name = nConfigHelper.getDisplayLanguage().getProperty("DS_RESPONSE");
         srcResponseTime.InternalName = "response";
-        srcResponseTime.Type = nRrdType.DERIVE;
+        srcResponseTime.Type = nStatsDataType.DERIVE;
         
         // - Deep Watcher Connection Time
-        nRrdDatasource srcConnectionCounter = new nRrdDatasource();
+        nStatsDatasource srcConnectionCounter = new nStatsDatasource();
         srcConnectionCounter.Heartbeat = 600;
         srcConnectionCounter.MaxValue = Double.MAX_VALUE;
         srcConnectionCounter.MinValue = 0;
-        srcConnectionCounter.Name = "connect";
+        srcConnectionCounter.Name = nConfigHelper.getDisplayLanguage().getProperty("DS_CONNECT");
         srcConnectionCounter.InternalName = "connect";
-        srcConnectionCounter.Type = nRrdType.DERIVE;
+        srcConnectionCounter.Type = nStatsDataType.DERIVE;
         
         sources.add(srcResponseTime);
         sources.add(srcConnectionCounter);

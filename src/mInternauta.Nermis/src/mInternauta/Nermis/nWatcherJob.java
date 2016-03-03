@@ -20,6 +20,7 @@ package mInternauta.Nermis;
 
 import java.util.Date;
 import java.util.logging.Level;
+import java.util.logging.Logger;
 import mInternauta.Nermis.Persistence.nStorage;
 import mInternauta.Nermis.Core.nService;
 import mInternauta.Nermis.Core.nServiceResults;
@@ -28,11 +29,11 @@ import mInternauta.Nermis.Core.nServiceStateRecord;
 import mInternauta.Nermis.Core.nServiceWatcher;
 import mInternauta.Nermis.Core.nServiceWatcherContext;
 import mInternauta.Nermis.Utils.nApplication;
+import static mInternauta.Nermis.Utils.nApplication.CurrentLogger;
 import org.quartz.Job;
 import org.quartz.JobDataMap;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
-import static mInternauta.Nermis.Utils.nApplication.CurrentLogger;
 
 // TODO: Implement global measurements
 // TODO: Implement per Watcher Measurements
@@ -49,16 +50,18 @@ public class nWatcherJob implements Job {
         try 
         {
             JobDataMap data = jec.getJobDetail().getJobDataMap();       
-
-            // -
-            CurrentLogger.log(Level.INFO, "Starting job: {0}", jec.getFireInstanceId());
-
+            
             // - Arguments for the Job
             String watcherName = data.getString("Watcher");
             String serviceName = data.getString("Service");
 
+            Logger logger = nApplication.CreateLogger("Services_" + serviceName, true);
+                    
             // -
-            CurrentLogger.log(Level.INFO, "Fetched job information: {0}-{1}", new Object[]{serviceName, watcherName});
+            logger.log(Level.INFO, "Starting job: {0}", jec.getFireInstanceId());
+
+            // -
+            logger.log(Level.INFO, "Fetched job information: {0}-{1}", new Object[]{serviceName, watcherName});
 
             // - Fetch the Watcher and the Service
             nService service = null;
@@ -83,11 +86,11 @@ public class nWatcherJob implements Job {
             // - Check the fetched data
             if(service != null && watcher != null) 
             {
-                CurrentLogger.log(Level.INFO, "Executing the Watcher for {0}", serviceName);
+                logger.log(Level.INFO, "Executing the Watcher for {0}", serviceName);
 
                 if(watcher.validate(service)) {
                     nServiceWatcherContext watcherContext = new nServiceWatcherContext();
-                    watcherContext.Rrd = nController.getRrdManager();
+                    watcherContext.Logger = logger;
                     
                     // Executes the Watcher
                     nServiceResults results = watcher.execute(service, watcherContext);
@@ -100,7 +103,7 @@ public class nWatcherJob implements Job {
                      nStorage.getInstance().States.put(serviceName, record);
                      nStorage.getInstance().saveStates(nStorage.getInstance().States);
 
-                     CurrentLogger.log(Level.INFO, "Executed the Watcher for {0}", serviceName);
+                     logger.log(Level.INFO, "Executed the Watcher for {0}", serviceName);
                      
                      if(record.State != nServiceState.ONLINE) {
                          String message = "Unresponsive";          
@@ -110,24 +113,28 @@ public class nWatcherJob implements Job {
                          }
                          
                          nApplication.getNofitier().NotifyServiceOffine(service, message);
-                         watcherContext.Rrd.UpdateRrd(service, "fails", 1);
+                         watcherContext.setStatsData("fails", 1);
                      }
                      else 
                      {
-                         watcherContext.Rrd.UpdateRrd(service, "success", 1);
+                         watcherContext.setStatsData("success", 1);
                      }
+                     
+                     
+                     // Save the Rrd Data
+                     watcherContext.UpdateStats(service, nController.getStatsManager());
                 } else {
-                    CurrentLogger.log(Level.SEVERE, "Invalid service settings for the current watcher: {0}", serviceName);
+                    logger.log(Level.SEVERE, "Invalid service settings for the current watcher: {0}", serviceName);
                 }
             }
             else 
             {
-                CurrentLogger.log(Level.SEVERE, "Cant fetch service information: {0}", serviceName);
+                logger.log(Level.SEVERE, "Cant fetch service information: {0}", serviceName);
             }
         } 
         catch(Exception ex)
         {
-            CurrentLogger.log(Level.INFO, "Error: {0}", ex.toString());
+            CurrentLogger.log(Level.INFO, "Error in Watcher Job: {0}", ex.toString());
         }
     }
     

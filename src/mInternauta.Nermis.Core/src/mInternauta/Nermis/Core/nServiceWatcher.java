@@ -32,26 +32,6 @@ import org.apache.commons.lang3.time.StopWatch;
  * monitoring the current state of the service and considering whether it is operational or not.
  */
 public abstract class nServiceWatcher {
-    
-    private StopWatch MeasurementStopwatch = new StopWatch();
-        
-    protected void stopMeasure(nService service, nServiceWatcherContext context, String dsName)
-    {           
-        // Stop the Connection Measurement
-        this.MeasurementStopwatch.stop();
-            
-        // - Update the connection time
-        context.Rrd.UpdateRrd(service, dsName, this.MeasurementStopwatch.getTime());
-        
-        this.MeasurementStopwatch.reset();
-    }
-    
-    protected void beginMeasure()
-    {
-        // Start the Connection Measurement
-        this.MeasurementStopwatch.start();    
-    }
-    
     /**
      * Get the watcher name
      * @return 
@@ -84,5 +64,5 @@ public abstract class nServiceWatcher {
      * 
      * @return 
      */
-    public abstract ArrayList<nRrdDatasource> getRRDDatasources();
+    public abstract ArrayList<nStatsDatasource> getStatsDatasources();
 }

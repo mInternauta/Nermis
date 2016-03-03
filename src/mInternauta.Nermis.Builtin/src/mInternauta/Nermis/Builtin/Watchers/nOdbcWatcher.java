@@ -25,8 +25,9 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
-import mInternauta.Nermis.Core.nRrdDatasource;
-import mInternauta.Nermis.Core.nRrdType;
+import mInternauta.Nermis.Configs.nConfigHelper;
+import mInternauta.Nermis.Core.nStatsDatasource;
+import mInternauta.Nermis.Core.nStatsDataType;
 import mInternauta.Nermis.Core.nServiceState;
 import mInternauta.Nermis.Core.nServiceWatcher;
 import mInternauta.Nermis.Core.nServiceWatcherContext;
@@ -62,12 +63,12 @@ public class nOdbcWatcher extends nServiceWatcher {
             String url = "jdbc:" + service.Properties.get("Provider") + "://"
                     + service.Properties.get("Hostname") + "/" + service.Properties.get("Database");
             
-            this.beginMeasure();
+            context.beginMeasure();
             
             Connection conn = DriverManager.getConnection(url, 
                     service.Properties.get("Username"), service.Properties.get("Password"));
             
-            this.stopMeasure(service, context, "connect");
+            context.stopMeasure("connect");
             
             // Check the connection state
             if(conn.isValid(10)) {
@@ -117,17 +118,17 @@ public class nOdbcWatcher extends nServiceWatcher {
     }
 
     @Override
-    public ArrayList<nRrdDatasource> getRRDDatasources() {
-         ArrayList<nRrdDatasource> sources = new ArrayList<>();
+    public ArrayList<nStatsDatasource> getStatsDatasources() {
+         ArrayList<nStatsDatasource> sources = new ArrayList<>();
          
         // - Deep Watcher Connection Time
-        nRrdDatasource srcConnectionCounter = new nRrdDatasource();
+        nStatsDatasource srcConnectionCounter = new nStatsDatasource();
         srcConnectionCounter.Heartbeat = 600;
         srcConnectionCounter.MaxValue = Double.MAX_VALUE;
         srcConnectionCounter.MinValue = 0;
-        srcConnectionCounter.Name = "connect";
+        srcConnectionCounter.Name = nConfigHelper.getDisplayLanguage().getProperty("DS_CONNECT");
         srcConnectionCounter.InternalName = "connect";
-        srcConnectionCounter.Type = nRrdType.DERIVE;
+        srcConnectionCounter.Type = nStatsDataType.DERIVE;
         
         sources.add(srcConnectionCounter);
         
