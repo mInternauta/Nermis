@@ -77,5 +77,11 @@
 		<copy file="start-service.sh" todir="${dist.dir}"/>
 		<copy file="start.sh" todir="${dist.dir}"/>
 		<copy file="nermis-deamon.sh" todir="${dist.dir}"/>
+		<copy file="..\libs\icmp4j\libicmp4jJNA.dylib" todir="${dist.dir}\lib\"/>
+		<copy file="..\libs\icmp4j\libicmp4jJNI.dylib" todir="${dist.dir}\lib\"/>
+		<copy file="..\libs\icmp4j\libicmp4jJNI_32bit.so" todir="${dist.dir}\lib\"/>
+		<copy file="..\libs\icmp4j\libicmp4jJNI_64bit.so" todir="${dist.dir}\lib\"/>
+		<copy file="..\libs\icmp4j\libicmp4jJNA_32bit.so" todir="${dist.dir}\lib\"/>
+		<copy file="..\libs\icmp4j\libicmp4jJNA_64bit.so" todir="${dist.dir}\lib\"/>
 	</target>
 </project>
