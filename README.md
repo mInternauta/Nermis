@@ -2,6 +2,8 @@
 ----------
 A small project that monitors online services and displays a web page that says if they are online.
 
+[See the Wiki for more information](https://github.com/mInternauta/Nermis/wiki)
+
 ## Screenshot
 ![](http://i.imgur.com/3M6kGPP.png)
 
