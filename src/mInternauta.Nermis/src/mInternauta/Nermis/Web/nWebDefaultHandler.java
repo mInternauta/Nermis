@@ -32,13 +32,11 @@ import java.util.logging.Level;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import mInternauta.Nermis.nController;
 import org.apache.commons.io.IOUtils;
 import org.eclipse.jetty.server.Request;
 import org.eclipse.jetty.server.handler.AbstractHandler;
 import org.luaj.vm2.Globals;
 import org.luaj.vm2.LuaValue;
-import org.luaj.vm2.lib.jse.CoerceJavaToLua;
 import org.luaj.vm2.lib.jse.JsePlatform;
 import static mInternauta.Nermis.Utils.nApplication.CurrentLogger;
 
@@ -48,6 +46,7 @@ import static mInternauta.Nermis.Utils.nApplication.CurrentLogger;
 public class nWebDefaultHandler extends AbstractHandler {
     private HashMap<String, AbstractHandler> handlerMaps = new HashMap<>();   
     private final String webServerPath;
+    private String[] welcomeFiles;
     
     nWebDefaultHandler(String webServerPath) {
         this.webServerPath = webServerPath;
@@ -74,7 +73,16 @@ public class nWebDefaultHandler extends AbstractHandler {
         try 
         {
             target = target.toLowerCase();
-            String targetPath = Paths.get(webServerPath, target).toString();
+            String targetPath = "";
+            
+            if(target.endsWith("/")) {
+                targetPath = searchWelcomeFile(target);
+            } 
+            else 
+            {            
+                targetPath = Paths.get(webServerPath, target).toString();
+            }
+            
             if(targetPath.endsWith(".lua")) {
                 processLuaScript(targetPath, hreq, resp);
             }
@@ -87,12 +95,23 @@ public class nWebDefaultHandler extends AbstractHandler {
                 sendResource(targetPath, resp);
             }
         }
-        catch(Exception exp)
+        catch(IOException | ServletException exp)
         {
             CurrentLogger.log(Level.SEVERE, "Web Server Error: ");
             CurrentLogger.log(Level.SEVERE, exp.toString());
             resp.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
         }
+    }
+
+    private String searchWelcomeFile(String targetPath) {
+        for(String wlcFile : this.welcomeFiles) {
+            File file = Paths.get(webServerPath, targetPath, wlcFile).toFile();
+            if(file.exists()) {
+                targetPath = file.getAbsolutePath();
+                break;
+            }
+        }
+        return targetPath;
     }
 
     private void sendResource(String targetPath, HttpServletResponse resp) throws IOException {
@@ -142,5 +161,9 @@ public class nWebDefaultHandler extends AbstractHandler {
               resp.setStatus(HttpServletResponse.SC_NOT_FOUND);
           }
       }
+
+    public void setWelcomeFiles(String[] list) {
+        this.welcomeFiles = list;
+    }
 
 }

@@ -25,6 +25,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
+import java.util.logging.Logger;
 import mInternauta.Nermis.Configs.nConfigHelper;
 import mInternauta.Nermis.Core.IStatsGraphManager;
 import mInternauta.Nermis.Core.nService;
@@ -53,27 +54,39 @@ public class nStatsGraphManager extends IStatsGraphManager {
 
             if (data.size() > 0) {
                 nServiceWatcher watcher = nController.getWatcherFor(service);
+                
                 for (nStatsDatasource dSource : watcher.getStatsDatasources()) {
-                    // Generate a Graph for the last hour
-                    generateChart(data, service, dSource.InternalName, 1);
-                    
-                    // Generate a Graph for the 4 hours
-                    generateChart(data, service, dSource.InternalName, 4);
-                    
-                    // Generate a Graph for the 12 hours
-                    generateChart(data, service, dSource.InternalName, 12);
-                    
-                    // Generate a Graph for the 24 hours
-                    generateChart(data, service, dSource.InternalName, 24);
-                    
-                    // Generate a Graph for the 48 hours
-                    generateChart(data, service, dSource.InternalName, 48);
+                    if (dSource.InternalName.equalsIgnoreCase("fails") == false
+                            && dSource.InternalName.equalsIgnoreCase("success"))  // Ignore Global Datasources
+                    {
+                        generateWatcherGraphics(data, service, dSource);
+                    }
                 }
+                
+                // Generate the Global Fails and Success Chart
+                generateFailsSucessGraphics(service, data);
             }
         }
     }
 
-    private void generateChart(ArrayList<nStatisticsData> data,
+    private void generateWatcherGraphics(ArrayList<nStatisticsData> data, nService service, nStatsDatasource dSource) {
+        // Generate a Graph for the last hour
+        generateWatcherChart(data, service, dSource.InternalName, 1);
+
+        // Generate a Graph for the 4 hours
+        generateWatcherChart(data, service, dSource.InternalName, 4);
+
+        // Generate a Graph for the 12 hours
+        generateWatcherChart(data, service, dSource.InternalName, 12);
+
+        // Generate a Graph for the 24 hours
+        generateWatcherChart(data, service, dSource.InternalName, 24);
+
+        // Generate a Graph for the 48 hours
+        generateWatcherChart(data, service, dSource.InternalName, 48);
+    }
+
+    private void generateWatcherChart(ArrayList<nStatisticsData> data,
             nService service,
             String dsName,
             int lastHours) {
@@ -95,51 +108,47 @@ public class nStatsGraphManager extends IStatsGraphManager {
                 DefaultCategoryDataset chartDataset = new DefaultCategoryDataset();
 
                 // Fill the data
-                for(nStatisticsData stat : data) {
-                    if(this.isValidStats(stat, startDate, endDate, dsName)) {
+                for (nStatisticsData stat : data) {
+                    if (this.isValidStats(stat, startDate, endDate, dsName)) {
                         chartDataset.addValue((Number) stat.Value, stat.DataSource, toChartDate(stat.Time));
                     }
                 }
-                                
-                if(chartDataset.getRowCount() > 0) {
+
+                if (chartDataset.getRowCount() > 0) {
                     // Build the chart
                     String charTitle = nConfigHelper.getDisplayLanguage().getProperty("CHART_LASTHOURS");
                     charTitle = charTitle.replace("{0}", String.valueOf(lastHours));
-                    
+
                     JFreeChart chartObject = ChartFactory.createLineChart3D(charTitle, service.Description + " - " + header.Description,
                             header.Description, chartDataset, PlotOrientation.VERTICAL, true, true, true);
-                                                        
+
                     ChartUtilities.saveChartAsPNG(chartFile, chartObject, 1280, 384);
-                    
+
                     nStatsGraphDef graphDef = new nStatsGraphDef();
                     graphDef.Datasource = header.Description;
                     graphDef.GeneratedAt = new Date().getTime();
                     graphDef.GraphFile = chartFile.getAbsolutePath();
                     graphDef.Name = graphName;
                     graphDef.ServiceName = service.Name;
-                    
+
                     this.saveGraphDef(graphDef);
                 }
             } catch (IOException ex) {
                 CurrentLogger.log(Level.SEVERE, null, ex);
             }
         }
-    }   
-  
+    }
+
     private boolean isValidStats(nStatisticsData stat, Date startDate, Date endDate, String dsName) {
         Date statTime = new Date(stat.Time);
-        
-        if(stat.DataSource.equalsIgnoreCase(dsName)) {
-            if(startDate.before(statTime) && endDate.after(statTime)) {
+
+        if (stat.DataSource.equalsIgnoreCase(dsName)) {
+            if (startDate.before(statTime) && endDate.after(statTime)) {
                 return true;
-            }
-            else
-            {
+            } else {
                 return false;
             }
-        }
-        else 
-        {
+        } else {
             return false;
         }
     }
@@ -149,4 +158,51 @@ public class nStatsGraphManager extends IStatsGraphManager {
         SimpleDateFormat format = new SimpleDateFormat("hh:mm");
         return format.format(date);
     }
+
+    private void generateFailsSucessGraphics(nService service, ArrayList<nStatisticsData> data) {
+        try {
+            // Sum all Fails and All Success data
+            long fails = 0;
+            long success = 0;
+            
+            // -
+            for(nStatisticsData stat : data) {
+                if(stat.DataSource.equalsIgnoreCase("fails")) {
+                    fails += stat.Value;
+                }
+                
+                if(stat.DataSource.equalsIgnoreCase("success")) {
+                    success += stat.Value;
+                }
+            }
+            
+            // - Generate the chart
+            DefaultCategoryDataset chartDataset = new DefaultCategoryDataset();
+            chartDataset.addValue(fails, service.Name, "fails");
+            chartDataset.addValue(success, service.Name, "success");
+            
+            // -
+            String graphName = "FailsAndSucess";
+            File chartFile = this.getGraphFile(service, "fails_success", graphName);
+            
+            String charTitle = nConfigHelper.getDisplayLanguage().getProperty("CHAR_FAILSANDSUCESS");
+            
+            JFreeChart chartObject = ChartFactory.createBarChart(charTitle, service.Description + " - " + charTitle,
+                    charTitle, chartDataset, PlotOrientation.VERTICAL, true, true, true);
+            
+            ChartUtilities.saveChartAsPNG(chartFile, chartObject, 1280, 384);
+            
+            nStatsGraphDef graphDef = new nStatsGraphDef();
+            graphDef.Datasource = "fails&success";
+            graphDef.GeneratedAt = new Date().getTime();
+            graphDef.GraphFile = chartFile.getAbsolutePath();
+            graphDef.Name = graphName;
+            graphDef.ServiceName = service.Name;
+            
+            this.saveGraphDef(graphDef);
+        } catch (IOException ex) {
+            CurrentLogger.log(Level.SEVERE, null, ex);
+        }
+    }
 }
+ 
