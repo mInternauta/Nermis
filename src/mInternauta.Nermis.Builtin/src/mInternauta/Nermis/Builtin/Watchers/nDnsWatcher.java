@@ -54,7 +54,16 @@ public class nDnsWatcher extends nServiceWatcher {
 
         if (hostname != null && hostname.isEmpty() == false) {
             try {
-                Resolver resolver = new SimpleResolver();
+                Resolver resolver = null;
+                
+                if(service.Properties.containsKey("DnsServer")) {
+                    resolver = new SimpleResolver(service.Properties.get("DnsServer"));
+                }
+                else 
+                {
+                    resolver = new SimpleResolver();
+                }
+                
                 Lookup lookup = new Lookup(hostname, Type.A);
                 
                 lookup.setResolver(resolver);
@@ -100,6 +109,7 @@ public class nDnsWatcher extends nServiceWatcher {
         HashMap<String, String> props = new HashMap<>();
 
         props.put("Hostname", "The Hostname to Resolve");
+        props.put("DnsServer", "The DNS Server to use (Optional) \n If not setted the watcher will use the system primary dns server");
 
         return props;
     }

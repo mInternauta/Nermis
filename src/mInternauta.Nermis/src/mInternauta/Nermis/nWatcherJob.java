@@ -49,6 +49,7 @@ public class nWatcherJob implements Job {
     public void execute(JobExecutionContext jec) throws JobExecutionException {
         try 
         {
+            CurrentLogger.log(Level.INFO, "Starting job: {0}", jec.getFireInstanceId());
             JobDataMap data = jec.getJobDetail().getJobDataMap();       
             
             // - Arguments for the Job
@@ -58,7 +59,7 @@ public class nWatcherJob implements Job {
             Logger logger = nApplication.CreateLogger("Services_" + serviceName, true);
                     
             // -
-            logger.log(Level.INFO, "Starting job: {0}", jec.getFireInstanceId());
+            
 
             // -
             logger.log(Level.INFO, "Fetched job information: {0}-{1}", new Object[]{serviceName, watcherName});

@@ -143,4 +143,9 @@ public class nRrdManager implements IStatsDataCollector
         return dsType;
     }
 
+    @Override
+    public void Export(nService service, File to) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
 }

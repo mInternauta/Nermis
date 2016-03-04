@@ -18,14 +18,26 @@
  */
 package mInternauta.Nermis.Statistics;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import mInternauta.Nermis.Core.nService;
 import mInternauta.Nermis.Core.IStatsDataCollector;
 import mInternauta.Nermis.Core.nServiceWatcher;
 import mInternauta.Nermis.Core.nStatsDataType;
 import mInternauta.Nermis.Core.nStatsDatasource;
+import static mInternauta.Nermis.Utils.nApplication.CurrentLogger;
 import mInternauta.Nermis.nController;
+import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.StringUtils;
 
 /**
  * Generic Statistics Data Collector
@@ -85,4 +97,55 @@ public class nStatsDataCollector implements IStatsDataCollector {
         
         nStatisticsHelper.SaveHeader(service, header);
     } 
+
+    @Override
+    public void Export(nService service, File to) {
+        try {
+            ArrayList<nStatisticsData> stats = nStatisticsHelper.Load(service);
+            
+            // Clean ou create the file
+            if(to.exists()) {
+                to.delete();
+            }  
+            
+            // - Export all data to the file
+            FileOutputStream stream = new FileOutputStream(to);
+            
+            IOUtils.write("Nermis - Exported Statistics", stream);
+            IOUtils.write("\r\nService: " + service.Description, stream);
+            IOUtils.write("\r\nUrl: " + service.RefUrl, stream);
+            
+            IOUtils.write("\r\n", stream);
+            IOUtils.write("\r\n", stream);
+            
+            // Sum all fails and all success
+            IOUtils.write("\r\nFails: " + String.valueOf(nStatisticsHelper.sum("fails", service)), stream);
+            IOUtils.write("\r\nSuccess: " + String.valueOf(nStatisticsHelper.sum("success", service)), stream);
+            
+            IOUtils.write("\r\n", stream);
+            IOUtils.write("\r\n", stream);
+            
+            // Write all data 
+            IOUtils.write("\r\n|- Name             |- Date             |- Value              |", stream);
+            for(nStatisticsData stat : stats) {
+                String name = StringUtils.rightPad(stat.DataSource, 17);
+                String value = StringUtils.rightPad(String.valueOf(stat.Value), 17);
+                
+                Date date = new Date(stat.Time);
+                SimpleDateFormat format = new SimpleDateFormat();
+                String cDate = StringUtils.rightPad(format.format(date), 17);
+                
+                IOUtils.write("\r\n| " + name + "| " + value + "| " + cDate + " |", stream);
+            }
+            
+            IOUtils.write("\r\n", stream);
+            IOUtils.write("\r\n", stream);
+            
+            stream.close();
+        } catch (FileNotFoundException ex) {
+            CurrentLogger.log(Level.SEVERE, null, ex);
+        } catch (IOException ex) {
+            CurrentLogger.log(Level.SEVERE, null, ex);
+        }       
+    }
 }

@@ -18,7 +18,6 @@
  */
 package mInternauta.Nermis.Builtin.Watchers;
 
-import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.logging.Level;
@@ -33,7 +32,6 @@ import mInternauta.Nermis.Core.nStatsDatasource;
 import org.icmp4j.IcmpPingRequest;
 import org.icmp4j.IcmpPingResponse;
 import org.icmp4j.IcmpPingUtil;
-import org.xbill.DNS.TextParseException;
 
 /**
  * This watcher analyzes a hostname and ping it 

@@ -163,4 +163,23 @@ public class nStatisticsHelper {
             }
         }
     }
+
+    /**
+     * Sum all values of a datasource
+     * @param dsName Datasource Name
+     * @param service Service
+     * @return 
+     */
+    public static double sum(String dsName, nService service) {
+        ArrayList<nStatisticsData> data = Load(service);
+        double value = 0;
+        
+        for(nStatisticsData  stat : data) {
+            if(stat.DataSource.equalsIgnoreCase(dsName)) {
+                value += stat.Value;
+            }
+        }
+        
+        return value;
+    }
 }

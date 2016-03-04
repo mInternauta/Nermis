@@ -18,12 +18,15 @@
  */
 package minternauta.nermis.deamon.CLI;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map.Entry;
+import java.util.UUID;
 import mInternauta.Nermis.Core.nService;
 import mInternauta.Nermis.Persistence.nServiceHelper;
 import mInternauta.Nermis.Core.nServiceWatcher;
+import mInternauta.Nermis.Utils.nResourceHelper;
 import mInternauta.Nermis.nController;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.Option;
@@ -81,6 +84,10 @@ public class CLIService implements ICLICommand {
                 .desc("List all watchers")
                 .build());
         servicesOptions.addOption(
+                Option.builder("exportstats")
+                .desc("Export the statistics for current service")
+                .build());
+        servicesOptions.addOption(
                 Option.builder("watcherprops")
                 .hasArg()
                 .desc("List all watcher properties")
@@ -115,6 +122,26 @@ public class CLIService implements ICLICommand {
         allWatchers(cmd);
         
         listWatcherProps(cmd);
+        
+        exportstats(cmd);
+    }
+
+    private void exportstats(CommandLine cmd) {
+        // Export service statistics
+        if(cmd.hasOption("exportstats")) {
+            String serviceName = this.selectedService;
+            
+            if(serviceName != null && serviceName.isEmpty() == false) {               
+                File exportFile = nResourceHelper.BuildName("Exported", serviceName + UUID.randomUUID().toString());
+                nService currentService = nServiceHelper.GetService(serviceName);
+                
+                System.out.println("Exporting statistics to: " + exportFile.getAbsolutePath());                
+                nController.getStatsManager().Export(currentService, exportFile);
+                System.out.println("Exported");
+            } else {
+                System.out.println("Select a service first");
+            }
+        }
     }
     
      private void allWatchers(CommandLine cmd) {

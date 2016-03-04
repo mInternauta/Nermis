@@ -73,6 +73,10 @@ public class nController {
             Watchers.addAll(nJarManager.LoadWatchersFromJar(entry.getValue()));
             Notifiers.addAll(nJarManager.LoadNotifiersFromJar(entry.getValue()));
         }
+        
+        // - Builtin Stats Manager
+        statsManager = new nStatsDataCollector();
+        statsGraphManager = new nStatsGraphManager();        
     }
 
     private static void _checkJarsConfig(nConfiguration cfg) {                
@@ -164,11 +168,7 @@ public class nController {
         
         // - Rrd Data Manager (Disabled, cant make work now)        
         // * statsManager = new nRrdManager();
-                
-        // - Builtin Stats Manager
-        statsManager = new nStatsDataCollector();
-        statsGraphManager = new nStatsGraphManager();
-        
+               
         for(nService service :  nStorage.getInstance().Services) {
             statsManager.Create(service);
         }
@@ -183,7 +183,7 @@ public class nController {
                 .build();
         
         SimpleScheduleBuilder schedule = SimpleScheduleBuilder.simpleSchedule()
-                .withIntervalInSeconds(30)
+                .withIntervalInSeconds(80)
                 .repeatForever();
         
         // - Build the Trigger

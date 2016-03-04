@@ -18,7 +18,9 @@
  */
 package mInternauta.Nermis;
 
+import java.util.logging.Level;
 import mInternauta.Nermis.Core.IStatsGraphManager;
+import static mInternauta.Nermis.Utils.nApplication.CurrentLogger;
 import org.quartz.Job;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
@@ -30,6 +32,7 @@ public class nStatsGraphsJob implements Job {
 
     @Override
     public void execute(JobExecutionContext jec) throws JobExecutionException {
+        CurrentLogger.log(Level.INFO, "Generating statistics charts cache..");
         IStatsGraphManager manager = nController.getStatsGraphManager();
         manager.Update();
     }
