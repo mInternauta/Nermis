@@ -59,3 +59,6 @@ https://github.com/mInternauta/App2Service
 * Thanks to Quartz Scheduler Team for the Quarts Scheduler 
 * Thanks to Jetty Team for the Jetty WebServer
 * Thanks to LuaJ Team for the LuaJ 
+* Thanks to JFree Team for the JFreeChart
+* Thanks to JBossDeveloper (RedHat) for the JBoss-Serialization
+* Thanks to Mathias Bogaert (rrd4j) for the RRD4J Library 
