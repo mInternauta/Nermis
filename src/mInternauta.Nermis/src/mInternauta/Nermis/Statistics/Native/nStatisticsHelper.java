@@ -24,6 +24,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import mInternauta.Nermis.Core.nService;
 import mInternauta.Nermis.Persistence.nStorage;
+import mInternauta.Nermis.Utils.nApplication;
 import mInternauta.Nermis.Utils.nResourceHelper;
 
 /**
@@ -38,8 +39,7 @@ public class nStatisticsHelper {
      */
     public static void SaveHeader(nService service, nStatisticsHeader header)
     {
-        nStorage storage = nStorage.getInstance();
-        storage.Options.BinaryMode = true;
+        nStorage storage = nApplication.BinaryStorage;
         
         nStatsHeaderContainer container = null;
         
@@ -83,8 +83,7 @@ public class nStatisticsHelper {
         File storagePath = nResourceHelper.BuildName("Statistics", "Header-" + service.Name);
 
         if (storagePath.exists()) {
-            nStorage storage = nStorage.getInstance();
-            storage.Options.BinaryMode = true;
+            nStorage storage = nApplication.BinaryStorage;
             nStatsHeaderContainer container = storage.loadContainer("Header-" + service.Name, "Statistics");
             data = container.getMyData();
         }
@@ -111,8 +110,7 @@ public class nStatisticsHelper {
         File storagePath = nResourceHelper.BuildName("Statistics", service.Name);
 
         if (storagePath.exists()) {
-            nStorage storage = nStorage.getInstance();
-            storage.Options.BinaryMode = true;
+            nStorage storage = nApplication.BinaryStorage;
             nStatsDataContainer container = storage.loadContainer(service.Name, "Statistics");
             data = container.getMyData();
         }
@@ -128,8 +126,7 @@ public class nStatisticsHelper {
      */
     public static void Update(nService service, String dsName, double value)
     {        
-        nStorage storage = nStorage.getInstance();
-        storage.Options.BinaryMode = true;
+        nStorage storage = nApplication.BinaryStorage;
         nStatsDataContainer container = null;
         
         ArrayList<nStatisticsData> data = new ArrayList<>();

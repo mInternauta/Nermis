@@ -22,6 +22,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import mInternauta.Nermis.Core.nService;
 import mInternauta.Nermis.Core.nServiceStateTable;
+import mInternauta.Nermis.Utils.nApplication;
 
 /**
  * Encapsulates the basic operations with the Storage Service 
@@ -32,7 +33,7 @@ public class nServiceHelper {
      * @param service 
      */
     public static void AddService(nService service) {
-        nStorage storage =  nStorage.getInstance();
+        nStorage storage = nApplication.XmlStorage;
         ArrayList<nService> services = storage.loadServices();
         services.add(service);
         
@@ -44,7 +45,7 @@ public class nServiceHelper {
      * @param serviceName 
      */
     public static void RemoveService(String serviceName) {
-        nStorage storage =  nStorage.getInstance();
+        nStorage storage = nApplication.XmlStorage;
         
         // - Remove the Service Configuration
         ArrayList<nService> services = storage.loadServices();
@@ -80,7 +81,7 @@ public class nServiceHelper {
      * @see .nService 
      */
     public static void SetProperty(String propertyName, String propertyValue, String serviceName) {
-        nStorage storage =  nStorage.getInstance();
+        nStorage storage =  nApplication.XmlStorage;
         
         // - Remove the Service Configuration
         ArrayList<nService> services = storage.loadServices();
@@ -129,7 +130,7 @@ public class nServiceHelper {
      * @param serviceName 
      */
     public static void RemoveProperty(String propertyName, String serviceName) {
-        nStorage storage =  nStorage.getInstance();
+        nStorage storage =  nApplication.XmlStorage;
         
         // - Remove the Service Configuration
         ArrayList<nService> services = storage.loadServices();
@@ -171,7 +172,7 @@ public class nServiceHelper {
      * @return 
      */
     public static ArrayList<nService> AllServices() {
-        nStorage storage =  nStorage.getInstance();
+        nStorage storage =  nApplication.XmlStorage;
         
         // - Remove the Service Configuration
         ArrayList<nService> services = storage.loadServices();
@@ -184,7 +185,7 @@ public class nServiceHelper {
      * @return 
      */
     public static nService GetService(String serviceName) {
-        nStorage storage =  nStorage.getInstance();
+        nStorage storage = nApplication.XmlStorage;
         
         // - Remove the Service Configuration
         ArrayList<nService> services = storage.loadServices();

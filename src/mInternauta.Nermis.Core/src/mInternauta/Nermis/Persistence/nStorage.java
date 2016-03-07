@@ -38,7 +38,7 @@ public class nStorage {
      * Get the instance of nStorage
      * @return 
      */
-    public static nStorage getInstance() {
+    public static nStorage newInstance() {
         return new nStorage();
     }
     

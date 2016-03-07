@@ -44,8 +44,10 @@ import org.quartz.TriggerBuilder;
 import org.quartz.impl.StdSchedulerFactory;
 import mInternauta.Nermis.Core.IStatsGraphManager;
 import mInternauta.Nermis.Core.IStatsDataCollector;
+import mInternauta.Nermis.Persistence.nServiceHelper;
 import mInternauta.Nermis.Statistics.Native.nStatsDataCollector;
 import mInternauta.Nermis.Statistics.Native.nStatsGraphManager;
+import mInternauta.Nermis.Utils.nApplication;
 
 /**
  * Nermis Main Controller
@@ -149,6 +151,9 @@ public class nController {
             // -
             setupStats();
             
+            // -
+            loadAutoSaveJob();
+            
             // - Start all Jobs
             scheduler.startDelayed(5);
             
@@ -169,7 +174,7 @@ public class nController {
         // - Rrd Data Manager (Disabled, cant make work now)        
         // * statsManager = new nRrdManager();
                
-        for(nService service :  nStorage.getInstance().Services) {
+        for(nService service : nServiceHelper.AllServices()) {
             statsManager.Create(service);
         }
         
@@ -218,12 +223,37 @@ public class nController {
         this.webServer.Stop();
         
         // - Save all data        
-         nStorage.getInstance().save();
+        nApplication.XmlStorage.save();
+    }
+    
+    private void loadAutoSaveJob() throws SchedulerException {             
+        // - Build the Job
+        JobDetail job = JobBuilder.newJob(nAutoSaveJob.class)
+                .withIdentity("Job_AutoSave", "System")
+                .build();
+        
+         // - Schedule
+        SimpleScheduleBuilder schedule;
+
+        schedule = SimpleScheduleBuilder.simpleSchedule()
+                    .withIntervalInSeconds(35)
+                    .repeatForever();
+        
+        // - Build the Trigger
+        SimpleTrigger trigger = TriggerBuilder
+                .newTrigger()
+                .withIdentity("Tg_AutoSave", "Services")
+                .startAt(new Date())
+                .withSchedule(schedule)
+                .build();
+
+        // -
+        scheduler.scheduleJob(job, trigger);
     }
     
     private void loadAllJobs() throws SchedulerException {
         // - Setup all Jobs
-        for(nService service :  nStorage.getInstance().Services) {
+        for(nService service :  nServiceHelper.AllServices()) {
             CurrentLogger.log(Level.INFO, "Configuring {0}", service.Name);
             
             // - Build the Job

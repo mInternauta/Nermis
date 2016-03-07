@@ -37,6 +37,7 @@ import mInternauta.Nermis.Core.nService;
 import mInternauta.Nermis.Core.nServiceState;
 import mInternauta.Nermis.Core.nServiceStateRecord;
 import mInternauta.Nermis.Core.nServiceStateTable;
+import mInternauta.Nermis.Utils.nApplication;
 import org.eclipse.jetty.server.Request;
 import org.eclipse.jetty.server.handler.AbstractHandler;
 
@@ -61,11 +62,12 @@ public class nServicePageHandler extends AbstractHandler {
     }
 
     private StringWriter buildItemContents() {
-        nStorage storage =  nStorage.getInstance();
+        nStorage storage = nApplication.XmlStorage;
         StringWriter rpWriter = new StringWriter();
         String tplServiceItem = templates.load("ServiceItem.html");
+        
         if(tplServiceItem.isEmpty() == false) {   
-            nServiceStateTable states = storage.loadStates();
+            nServiceStateTable states = storage.States;
             
             ArrayList<nService> services = new ArrayList<>();
             services = nServiceHelper.AllServices();

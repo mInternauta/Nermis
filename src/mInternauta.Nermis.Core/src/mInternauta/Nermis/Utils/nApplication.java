@@ -29,11 +29,17 @@ import mInternauta.Nermis.Configs.nConfigHelper;
 import mInternauta.Nermis.Core.nServiceWatcher;
 import mInternauta.Nermis.Notifiers.nAbstractNotifier;
 import mInternauta.Nermis.Notifiers.nConsoleNotifier;
+import mInternauta.Nermis.Persistence.nStorage;
 
 /**
  * Current Application Environment
  */
 public final class nApplication {    
+    
+    // - Storage Controllers
+    public static nStorage BinaryStorage;
+    public static nStorage XmlStorage;
+    
     /**
      * Global logger for the Nermis 
      */
@@ -49,7 +55,7 @@ public final class nApplication {
      * Loaded Notifiers
      */
     public static ArrayList<nAbstractNotifier> Notifiers = new ArrayList<>();
-       
+        
     /**
      * Get Current notifier
      * @return 
@@ -78,6 +84,16 @@ public final class nApplication {
     // -
     static {
         setupLogger();
+        
+        
+        // -
+        CurrentLogger.log(Level.INFO, "Loading all storages.." );
+        
+        nApplication.BinaryStorage = nStorage.newInstance();
+        nApplication.BinaryStorage.Options.BinaryMode = true;
+
+        nApplication.XmlStorage = nStorage.newInstance();
+        nApplication.XmlStorage.load();
     }
     
     public static Logger CreateLogger(String logName, boolean notOutConsole)

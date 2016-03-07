@@ -21,6 +21,7 @@ package mInternauta.Nermis.Configs;
 import java.util.HashMap;
 import java.util.Properties;
 import mInternauta.Nermis.Persistence.nStorage;
+import mInternauta.Nermis.Utils.nApplication;
 
 /**
  * Helps manage the Nermis Main Configuration 
@@ -58,7 +59,7 @@ public class nConfigHelper {
      * @return The configuration object
      */
     public static nConfiguration Load() {
-        nStorage storage = nStorage.getInstance();
+        nStorage storage = nApplication.XmlStorage;
         nConfigContainer container = storage.loadContainer("Nermis", "Settings");
         nConfiguration cfg = null;
         
@@ -82,7 +83,7 @@ public class nConfigHelper {
      * @param cfg 
      */
     public static void Save(nConfiguration cfg) {
-        nStorage storage = nStorage.getInstance();
+        nStorage storage = nApplication.XmlStorage;
         nConfigContainer container = new nConfigContainer();        
         container.setMyData(cfg);
         storage.saveContainer(container, "Nermis", "Settings");
