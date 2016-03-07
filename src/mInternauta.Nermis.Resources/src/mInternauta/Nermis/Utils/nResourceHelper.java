@@ -110,6 +110,14 @@ public class nResourceHelper {
         }
         
         File file = new File(path);
+        
+        // Get the and check if exists 
+        // - Fix for Subdirectories in Name argument
+        File directory = file.getParentFile();
+        if(directory.exists() == false) {
+            directory.mkdirs();
+        }                
+        
         return file;
     }
 

@@ -25,7 +25,6 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
-import java.util.logging.Logger;
 import mInternauta.Nermis.Configs.nConfigHelper;
 import mInternauta.Nermis.Core.IStatsGraphManager;
 import mInternauta.Nermis.Core.nService;
@@ -57,7 +56,7 @@ public class nStatsGraphManager extends IStatsGraphManager {
                 
                 for (nStatsDatasource dSource : watcher.getStatsDatasources()) {
                     if (dSource.InternalName.equalsIgnoreCase("fails") == false
-                            && dSource.InternalName.equalsIgnoreCase("success"))  // Ignore Global Datasources
+                            && dSource.InternalName.equalsIgnoreCase("success") == false)  // Ignore Global Datasources
                     {
                         generateWatcherGraphics(data, service, dSource);
                     }

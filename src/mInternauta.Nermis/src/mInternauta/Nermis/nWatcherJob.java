@@ -35,10 +35,7 @@ import org.quartz.JobDataMap;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
 
-// TODO: Implement global measurements
-// TODO: Implement per Watcher Measurements
 // TODO: Implement RRD Graphs
-// TODO: Implement DNS Check Watcher
 
 /**
  * Watcher Job for the scheduled task
@@ -48,18 +45,18 @@ public class nWatcherJob implements Job {
     @Override
     public void execute(JobExecutionContext jec) throws JobExecutionException {
         try 
-        {
-            CurrentLogger.log(Level.INFO, "Starting job: {0}", jec.getFireInstanceId());
+        {           
             JobDataMap data = jec.getJobDetail().getJobDataMap();       
             
             // - Arguments for the Job
             String watcherName = data.getString("Watcher");
             String serviceName = data.getString("Service");
 
-            Logger logger = nApplication.CreateLogger("Services_" + serviceName, true);
-                    
-            // -
+            Logger logger = nApplication.CreateLogger("Services\\" + serviceName, true);
             
+            // -
+            CurrentLogger.log(Level.INFO, "Starting job for: {0} - {1}", new Object[]{serviceName, watcherName});
+            logger.log(Level.INFO, "Starting job: {0}", jec.getFireInstanceId());
 
             // -
             logger.log(Level.INFO, "Fetched job information: {0}-{1}", new Object[]{serviceName, watcherName});
