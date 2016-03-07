@@ -23,6 +23,7 @@ import java.util.Scanner;
 import minternauta.nermis.deamon.CLI.CLIExecute;
 import minternauta.nermis.deamon.CLI.CLIService;
 import minternauta.nermis.deamon.CLI.CLISettings;
+import minternauta.nermis.deamon.CLI.CLIStatistics;
 import minternauta.nermis.deamon.CLI.ICLICommand;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.DefaultParser;
@@ -40,6 +41,7 @@ public class CLIManager {
         this.commands.add(new CLIExecute());
         this.commands.add(new CLIService());
         this.commands.add(new CLISettings());
+        this.commands.add(new CLIStatistics());
         
         // -
         this.parser = new DefaultParser();

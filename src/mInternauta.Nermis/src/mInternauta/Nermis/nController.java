@@ -44,8 +44,8 @@ import org.quartz.TriggerBuilder;
 import org.quartz.impl.StdSchedulerFactory;
 import mInternauta.Nermis.Core.IStatsGraphManager;
 import mInternauta.Nermis.Core.IStatsDataCollector;
-import mInternauta.Nermis.Statistics.nStatsDataCollector;
-import mInternauta.Nermis.Statistics.nStatsGraphManager;
+import mInternauta.Nermis.Statistics.Native.nStatsDataCollector;
+import mInternauta.Nermis.Statistics.Native.nStatsGraphManager;
 
 /**
  * Nermis Main Controller

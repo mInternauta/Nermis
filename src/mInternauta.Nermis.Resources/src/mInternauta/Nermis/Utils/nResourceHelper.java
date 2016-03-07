@@ -25,6 +25,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
 
 /**
@@ -92,33 +93,40 @@ public class nResourceHelper {
      */
     public static File BuildName(String kind, String name) {
         String path = BuildDirectory(kind);
+        String extension = FilenameUtils.getExtension(name);
         
         path += name;   
         
-        if(kind.equalsIgnoreCase("Settings")) {
-            path += ".xml";
-        } else if(kind.equalsIgnoreCase("Logs")) {
-            path += ".log";
-        } else if(kind.equalsIgnoreCase("Langs")) {
-            path += ".properties";
-        } else if(kind.equalsIgnoreCase("RRD")) {
-            path += ".rrd";
-        } else if(kind.equalsIgnoreCase("Graphs")) {
-            path += ".png";
-        } else {
-            path += ".nmd";
+        if(extension.isEmpty()) {        
+            if(kind.equalsIgnoreCase("Settings")) {
+                path += ".xml";
+            } else if(kind.equalsIgnoreCase("Logs")) {
+                path += ".log";
+            } else if(kind.equalsIgnoreCase("Langs")) {
+                path += ".properties";
+            } else if(kind.equalsIgnoreCase("RRD")) {
+                path += ".rrd";
+            } else if(kind.equalsIgnoreCase("Graphs")) {
+                path += ".png";
+            } else {
+                path += ".nmd";
+            }
         }
         
         File file = new File(path);
-        
-        // Get the and check if exists 
+                
+        // Get the and check if exists
         // - Fix for Subdirectories in Name argument
+        checkParentDirs(file);
+        
+        return file;
+    }
+
+    private static void checkParentDirs(File file) {
         File directory = file.getParentFile();
         if(directory.exists() == false) {
             directory.mkdirs();
-        }                
-        
-        return file;
+        }
     }
 
     /**

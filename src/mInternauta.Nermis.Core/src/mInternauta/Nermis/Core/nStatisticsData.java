@@ -16,14 +16,24 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  * 
  */
-package mInternauta.Nermis.Statistics;
-
-import java.util.ArrayList;
-import mInternauta.Nermis.Persistence.nBaseContainer;
+package mInternauta.Nermis.Core;
 
 /**
- * Statistics Header Container
+ * Statistics Data for a Service
  */
-public class nStatsHeaderContainer extends nBaseContainer<ArrayList<nStatisticsHeader>> {
+public class nStatisticsData {
+    /**
+     * Statistics Time
+     */
+    public long Time;
     
+    /**
+     * Datasource Name
+     */
+    public String DataSource;
+        
+    /**
+     * Datasource Value
+     */
+    public double Value;
 }

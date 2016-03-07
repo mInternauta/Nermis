@@ -19,6 +19,7 @@
 package mInternauta.Nermis.Core;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.Map;
 
 /**
@@ -38,11 +39,11 @@ public interface IStatsDataCollector {
      * @return 
      */
     public boolean Create(nService service);
-    
+
     /**
-     * Export all data of a service to file
+     * Load all statistics data for a service
      * @param service
-     * @param to 
+     * @return 
      */
-    public void Export(nService service, File to);
+    public ArrayList<nStatisticsData> Load(nService service);
 }

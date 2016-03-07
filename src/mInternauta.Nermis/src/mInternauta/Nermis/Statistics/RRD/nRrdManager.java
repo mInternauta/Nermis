@@ -20,6 +20,7 @@ package mInternauta.Nermis.Statistics.RRD;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.logging.Level;
@@ -38,6 +39,7 @@ import org.rrd4j.core.RrdDb;
 import org.rrd4j.core.RrdDef;
 import org.rrd4j.core.Sample;
 import mInternauta.Nermis.Core.IStatsDataCollector;
+import mInternauta.Nermis.Core.nStatisticsData;
 
 /**
  * Manage all RRD data for the service
@@ -144,8 +146,7 @@ public class nRrdManager implements IStatsDataCollector
     }
 
     @Override
-    public void Export(nService service, File to) {
+    public ArrayList<nStatisticsData> Load(nService service) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
-
 }
