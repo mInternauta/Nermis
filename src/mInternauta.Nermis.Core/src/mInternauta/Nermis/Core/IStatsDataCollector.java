@@ -46,4 +46,10 @@ public interface IStatsDataCollector {
      * @return 
      */
     public ArrayList<nStatisticsData> Load(nService service);
+    
+    /**
+     * Load all statistics data from a file
+     * @return 
+     */
+    public ArrayList<nStatisticsData> Load(File dataFile);
 }

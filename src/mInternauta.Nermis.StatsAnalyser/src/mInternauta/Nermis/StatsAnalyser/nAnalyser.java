@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015 mInternauta
+ * Copyright (C) 2016 mInternauta
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -16,26 +16,32 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  * 
  */
-package mInternauta.Nermis;
+package mInternauta.Nermis.StatsAnalyser;
 
-import java.util.logging.Level;
-import mInternauta.Nermis.Core.IStatsGraphManager;
+import java.io.File;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import javax.swing.table.DefaultTableModel;
+import mInternauta.Nermis.Core.nStatisticsData;
 import mInternauta.Nermis.Statistics.nStatsController;
-import static mInternauta.Nermis.Utils.nApplication.CurrentLogger;
-import org.quartz.Job;
-import org.quartz.JobExecutionContext;
-import org.quartz.JobExecutionException;
 
 /**
- * Statistics Graphs Job
+ * Analyser Form Logic
  */
-public class nStatsGraphsJob implements Job {
-
-    @Override
-    public void execute(JobExecutionContext jec) throws JobExecutionException {
-        CurrentLogger.log(Level.INFO, "Generating statistics charts cache..");
-        IStatsGraphManager manager = nStatsController.getStatsGraphManager();
-        manager.Update();
+public class nAnalyser {
+    private ArrayList<nStatisticsData> cData;
+    
+    public void Load(File file) {
+        this.cData = nStatsController.getStatsManager().Load(file);
     }
     
+    public void Fill(DefaultTableModel model) {
+        SimpleDateFormat format = new SimpleDateFormat();
+        
+        for(nStatisticsData stat : this.cData) {
+            Date time = new Date(stat.Time);
+            model.addRow(new Object[] { stat.DataSource, format.format(time), stat.Value});
+        }
+    }
 }

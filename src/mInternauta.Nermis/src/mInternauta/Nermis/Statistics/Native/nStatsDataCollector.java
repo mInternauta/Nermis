@@ -18,6 +18,7 @@
  */
 package mInternauta.Nermis.Statistics.Native;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -91,5 +92,10 @@ public class nStatsDataCollector implements IStatsDataCollector {
     @Override
     public ArrayList<nStatisticsData> Load(nService service) {
         return nStatisticsHelper.Load(service);
+    }
+
+    @Override
+    public ArrayList<nStatisticsData> Load(File dataFile) {
+         return nStatisticsHelper.Load(dataFile);
     }
 }

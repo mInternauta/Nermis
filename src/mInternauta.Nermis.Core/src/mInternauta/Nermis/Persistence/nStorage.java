@@ -18,6 +18,8 @@
  */
 package mInternauta.Nermis.Persistence;
 
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.io.InputStream;
@@ -33,36 +35,37 @@ import static mInternauta.Nermis.Utils.nApplication.CurrentLogger;
 public class nStorage {
 
     private static nStorage instance;
-    
+
     /**
      * Get the instance of nStorage
-     * @return 
+     *
+     * @return
      */
     public static nStorage newInstance() {
         return new nStorage();
     }
-    
+
     public nSerializerOptions Options;
     private nContainerSerializer serializer;
-    
+
     // - nStorage can have only a single instance, otherwise the cached objects will conflict.
-    private nStorage() {        
+    private nStorage() {
         this.Options = new nSerializerOptions();
         this.Options.BinaryMode = false;
         this.serializer = new nContainerSerializer();
         this.load();
     }
-    
+
     /**
      * Current Services
      */
     public ArrayList<nService> Services;
-    
+
     /**
      * Current States
      */
     public nServiceStateTable States;
-    
+
     /**
      * Load all stored data
      */
@@ -70,7 +73,7 @@ public class nStorage {
         this.Services = loadServices();
         this.States = loadStates();
     }
-    
+
     /**
      * Save all storage data
      */
@@ -78,118 +81,125 @@ public class nStorage {
         saveServices(this.Services);
         saveStates(this.States);
     }
-    
+
     /**
      * Save the container into a resource
+     *
      * @param <TContainer> The container type
      * @param container The container
      * @param name
-     * @param kind 
+     * @param kind
      * @see mInternauta.Nermis.Utils.nResourceHelper
      */
     public <TContainer extends nBaseContainer> void saveContainer(TContainer container, String name, String kind) {
         try {
             OutputStream stream = nResourceHelper.WriteResource(name, kind);
-            
+
             serializer.setOptions(Options);
             serializer.Save(container, stream);
-            
+
             stream.flush();
             stream.close();
         } catch (Exception ex) {
             CurrentLogger.log(Level.SEVERE, null, ex);
         }
     }
-    
+
     /**
      * Load the container from a resources
+     *
      * @param <TContainer> The container type
      * @param name
      * @param kind
      * @return The container object
      * @see mInternauta.Nermis.Utils.nResourceHelper
      */
-    public  <TContainer extends nBaseContainer> TContainer loadContainer(String name, String kind)  
-    {
-        TContainer container = null;
-        
-        try {
-            InputStream stream = nResourceHelper.ReadResource(name, kind);
-            
-            serializer.setOptions(Options);
-            container = serializer.Load(stream);
-            
-            stream.close();
-        } catch (Exception ex) {
-            //nController.CurrentLogger.log(Level.SEVERE, null, ex);
-        }
-        
-        return container;
+    public <TContainer extends nBaseContainer> TContainer loadContainer(String name, String kind) {
+        return this.loadContainer(nResourceHelper.BuildName(kind, name));
     }
-    
+
     /**
      * Load all services
-     * @return 
+     *
+     * @return
      */
     public ArrayList<nService> loadServices() {
         ArrayList<nService> services = new ArrayList<>();
 
         nServiceContainer container = loadContainer("Services", "Settings");
-        
-        if(container != null) {
+
+        if (container != null) {
             services = container.getMyData();
-            if(services == null) {
+            if (services == null) {
                 services = new ArrayList<>();
             }
         }
 
         return services;
     }
-    
+
     /**
      * Save the service list
-     * @param services 
+     *
+     * @param services
      */
-    public void saveServices(ArrayList<nService> services) 
-    {         
-        nServiceContainer container =  new nServiceContainer();
+    public void saveServices(ArrayList<nService> services) {
+        nServiceContainer container = new nServiceContainer();
         container.setMyData(services);
-        
+
         this.Services = services;
-        
+
         saveContainer(container, "Services", "Settings");
     }
-    
+
     /**
      * Load the state table
-     * @return 
+     *
+     * @return
      */
     public nServiceStateTable loadStates() {
         nServiceStateTable states = new nServiceStateTable();
 
         nStatesContainer container = loadContainer("States", "Current");
-        
-        if(container != null) {
+
+        if (container != null) {
             states = container.getMyData();
-            if(states == null) {
+            if (states == null) {
                 states = new nServiceStateTable();
             }
         }
-        
+
         return states;
     }
-    
+
     /**
      * Save the state table
-     * @param states 
+     *
+     * @param states
      */
-    public void saveStates(nServiceStateTable states) 
-    {
-        nStatesContainer container =  new nStatesContainer();
+    public void saveStates(nServiceStateTable states) {
+        nStatesContainer container = new nStatesContainer();
         container.setMyData(states);
-        
+
         this.States = states;
-            
+
         saveContainer(container, "States", "Current");
+    }
+
+    public <TContainer extends nBaseContainer> TContainer loadContainer(File storagePath) {
+        TContainer container = null;
+
+        try {
+            InputStream stream = new FileInputStream(storagePath);
+
+            serializer.setOptions(Options);
+            container = serializer.Load(stream);
+
+            stream.close();
+        } catch (Exception ex) {
+            //nController.CurrentLogger.log(Level.SEVERE, null, ex);
+        }
+
+        return container;
     }
 }

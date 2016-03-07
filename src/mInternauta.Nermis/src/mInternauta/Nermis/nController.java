@@ -23,7 +23,6 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.Map.Entry;
 import java.util.logging.Level;
-import mInternauta.Nermis.Persistence.nStorage;
 import mInternauta.Nermis.Core.nService;
 import mInternauta.Nermis.Core.nServiceWatcher;
 import mInternauta.Nermis.Configs.nConfigHelper;
@@ -45,8 +44,6 @@ import org.quartz.impl.StdSchedulerFactory;
 import mInternauta.Nermis.Core.IStatsGraphManager;
 import mInternauta.Nermis.Core.IStatsDataCollector;
 import mInternauta.Nermis.Persistence.nServiceHelper;
-import mInternauta.Nermis.Statistics.Native.nStatsDataCollector;
-import mInternauta.Nermis.Statistics.Native.nStatsGraphManager;
 import mInternauta.Nermis.Utils.nApplication;
 
 /**
@@ -74,11 +71,7 @@ public class nController {
             CurrentLogger.log(Level.INFO, "Loading: {0}", entry.getKey());
             Watchers.addAll(nJarManager.LoadWatchersFromJar(entry.getValue()));
             Notifiers.addAll(nJarManager.LoadNotifiersFromJar(entry.getValue()));
-        }
-        
-        // - Builtin Stats Manager
-        statsManager = new nStatsDataCollector();
-        statsGraphManager = new nStatsGraphManager();        
+        }   
     }
 
     private static void _checkJarsConfig(nConfiguration cfg) {                
@@ -87,22 +80,6 @@ public class nController {
             cfg.IncludedJars = cfg2.IncludedJars;
             nConfigHelper.Save(cfg);
         }
-    }
-    
-    /**
-     * Return the Statistics Data Manager instance 
-     * @return 
-     */
-    public static IStatsDataCollector getStatsManager() {
-        return statsManager;
-    }
-    
-      /**
-     * Return the Statistics Graph Manager instance 
-     * @return 
-     */
-    public static IStatsGraphManager getStatsGraphManager() {
-        return statsGraphManager;
     }
     
     /**

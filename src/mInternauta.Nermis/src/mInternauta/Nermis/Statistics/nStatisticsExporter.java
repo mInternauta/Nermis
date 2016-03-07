@@ -28,7 +28,6 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.UUID;
 import java.util.logging.Level;
-import java.util.logging.Logger;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 import mInternauta.Nermis.Core.IStatsGraphManager;
@@ -36,7 +35,6 @@ import mInternauta.Nermis.Core.nService;
 import mInternauta.Nermis.Core.nStatisticsData;
 import mInternauta.Nermis.Core.nStatsGraphDef;
 import mInternauta.Nermis.Persistence.nServiceHelper;
-import mInternauta.Nermis.Statistics.Native.nStatisticsHelper;
 import static mInternauta.Nermis.Utils.nApplication.CurrentLogger;
 import mInternauta.Nermis.Utils.nResourceHelper;
 import mInternauta.Nermis.nController;
@@ -46,8 +44,8 @@ import org.apache.commons.lang3.StringUtils;
 /**
  * Export any statistics data to a file
  */
-public class nStatisticsExporter {
-
+public class nStatisticsExporter {    
+    
     /**
      * Export all services statistics to a package
      *
@@ -77,33 +75,6 @@ public class nStatisticsExporter {
         }
     }
 
-    private void exportGraphs(nService service, ZipOutputStream outputZip) throws IOException {
-        // Export all Graphics
-        ArrayList<nStatsGraphDef> graphs = IStatsGraphManager.getAllGraphs(service);
-        
-        for(nStatsGraphDef graph : graphs) {
-            File grpFile = new File(graph.GraphFile);
-            
-            if(grpFile.exists()) {
-                String name = grpFile.getName();
-                outputZip.putNextEntry(new ZipEntry("Graphs/" + name));
-                IOUtils.copy(new FileInputStream(grpFile), outputZip);
-                outputZip.closeEntry();
-            }
-        }
-    }
-
-    private void exportStatistics(nService service, ZipOutputStream outputZip) throws IOException {
-        File tempFile = nResourceHelper.BuildName("Temp", service.Name + UUID.randomUUID().toString());
-        this.Export(service, tempFile);
-        
-        if(tempFile.exists()) {
-            outputZip.putNextEntry(new ZipEntry("Statistics/" + service.Name + ".txt"));
-            IOUtils.copy(new FileInputStream(tempFile), outputZip);
-            outputZip.closeEntry();
-        }
-    }
-
     /**
      * Export all statistics data for the service to a file
      *
@@ -111,8 +82,10 @@ public class nStatisticsExporter {
      * @param to
      */
     public void Export(nService service, File to) {
+        nStatsAnalyser analyser = new nStatsAnalyser();
+        
         try {
-            ArrayList<nStatisticsData> stats = nController
+            ArrayList<nStatisticsData> stats = nStatsController
                     .getStatsManager()
                     .Load(service);
 
@@ -132,8 +105,8 @@ public class nStatisticsExporter {
             IOUtils.write("\r\n", stream);
 
             // Sum all fails and all success
-            IOUtils.write("\r\nFails: " + String.valueOf(nStatisticsHelper.sum("fails", service)), stream);
-            IOUtils.write("\r\nSuccess: " + String.valueOf(nStatisticsHelper.sum("success", service)), stream);
+            IOUtils.write("\r\nFails: " + String.valueOf(analyser.sum("fails", service)), stream);
+            IOUtils.write("\r\nSuccess: " + String.valueOf(analyser.sum("success", service)), stream);
 
             IOUtils.write("\r\n", stream);
             IOUtils.write("\r\n", stream);
@@ -159,6 +132,33 @@ public class nStatisticsExporter {
             CurrentLogger.log(Level.SEVERE, null, ex);
         } catch (IOException ex) {
             CurrentLogger.log(Level.SEVERE, null, ex);
+        }
+    }   
+
+    private void exportGraphs(nService service, ZipOutputStream outputZip) throws IOException {
+        // Export all Graphics
+        ArrayList<nStatsGraphDef> graphs = IStatsGraphManager.getAllGraphs(service);
+        
+        for(nStatsGraphDef graph : graphs) {
+            File grpFile = new File(graph.GraphFile);
+            
+            if(grpFile.exists()) {
+                String name = grpFile.getName();
+                outputZip.putNextEntry(new ZipEntry("Graphs/" + name));
+                IOUtils.copy(new FileInputStream(grpFile), outputZip);
+                outputZip.closeEntry();
+            }
+        }
+    }
+
+    private void exportStatistics(nService service, ZipOutputStream outputZip) throws IOException {
+        File tempFile = nResourceHelper.BuildName("Temp", service.Name + UUID.randomUUID().toString());
+        this.Export(service, tempFile);
+        
+        if(tempFile.exists()) {
+            outputZip.putNextEntry(new ZipEntry("Statistics/" + service.Name + ".txt"));
+            IOUtils.copy(new FileInputStream(tempFile), outputZip);
+            outputZip.closeEntry();
         }
     }
 }

@@ -34,51 +34,49 @@ public class nStatisticsHelper {
 
     /**
      * Save the service statistics header
+     *
      * @param service
-     * @param header 
+     * @param header
      */
-    public static void SaveHeader(nService service, nStatisticsHeader header)
-    {
+    public static void SaveHeader(nService service, nStatisticsHeader header) {
         nStorage storage = nApplication.BinaryStorage;
-        
+
         nStatsHeaderContainer container = null;
-        
+
         ArrayList<nStatisticsHeader> data = new ArrayList<>();
         File storagePath = nResourceHelper.BuildName("Statistics", "Header-" + service.Name);
 
         if (storagePath.exists()) {
             container = storage.loadContainer("Header-" + service.Name, "Statistics");
             data = container.getMyData();
-        }
-        else 
-        {
+        } else {
             container = new nStatsHeaderContainer();
         }
-        
+
         nStatisticsHeader cHeader = null;
-        for(nStatisticsHeader cIHeader : data) {
-            if(cIHeader.Datasource.equalsIgnoreCase(header.Datasource)) {
+        for (nStatisticsHeader cIHeader : data) {
+            if (cIHeader.Datasource.equalsIgnoreCase(header.Datasource)) {
                 cHeader = cIHeader;
                 break;
             }
         }
-        
-        if(cHeader != null) {
+
+        if (cHeader != null) {
             data.remove(cHeader);
         }
-        
+
         data.add(header);
         container.setMyData(data);
         storage.saveContainer(container, "Header-" + service.Name, "Statistics");
     }
-    
+
     /**
      * Load the service statistics header
+     *
      * @param service
-     * @return 
+     * @return
      */
-    public static nStatisticsHeader LoadHeader(nService service, String dsName)
-    {
+    public static nStatisticsHeader LoadHeader(nService service, String dsName) {
         ArrayList<nStatisticsHeader> data = new ArrayList<>();
         File storagePath = nResourceHelper.BuildName("Statistics", "Header-" + service.Name);
 
@@ -87,18 +85,18 @@ public class nStatisticsHelper {
             nStatsHeaderContainer container = storage.loadContainer("Header-" + service.Name, "Statistics");
             data = container.getMyData();
         }
-        
+
         nStatisticsHeader cHeader = null;
-        for(nStatisticsHeader cIHeader : data) {
-            if(cIHeader.Datasource.equalsIgnoreCase(dsName)) {
+        for (nStatisticsHeader cIHeader : data) {
+            if (cIHeader.Datasource.equalsIgnoreCase(dsName)) {
                 cHeader = cIHeader;
                 break;
             }
         }
-        
+
         return cHeader;
     }
-    
+
     /**
      * Load the statistics for the service
      *
@@ -109,45 +107,36 @@ public class nStatisticsHelper {
         ArrayList<nStatisticsData> data = new ArrayList<>();
         File storagePath = nResourceHelper.BuildName("Statistics", service.Name);
 
-        if (storagePath.exists()) {
-            nStorage storage = nApplication.BinaryStorage;
-            nStatsDataContainer container = storage.loadContainer(service.Name, "Statistics");
-            data = container.getMyData();
-        }
-        
-        return data;
+        return Load(storagePath);
     }
-    
+
     /**
      * Update a statistics value for the service
+     *
      * @param service
      * @param dsName
-     * @param value 
+     * @param value
      */
-    public static void Update(nService service, String dsName, double value)
-    {        
+    public static void Update(nService service, String dsName, double value) {
         nStorage storage = nApplication.BinaryStorage;
         nStatsDataContainer container = null;
-        
+
         ArrayList<nStatisticsData> data = new ArrayList<>();
         File storagePath = nResourceHelper.BuildName("Statistics", service.Name);
 
         if (storagePath.exists()) {
             container = storage.loadContainer(service.Name, "Statistics");
             data = container.getMyData();
-        }
-        else 
-        {
+        } else {
             container = new nStatsDataContainer();
         }
-        
+
         nStatisticsHeader ds = LoadHeader(service, dsName);
-        
-        if(ds != null) 
-        {
+
+        if (ds != null) {
             boolean isValid = value <= ds.MaxValue && value >= ds.MinValue;
-            
-            if(isValid) {            
+
+            if (isValid) {
                 Date currentDate = new Date();
                 nStatisticsData newData = new nStatisticsData();
                 newData.DataSource = dsName;
@@ -163,21 +152,20 @@ public class nStatisticsHelper {
     }
 
     /**
-     * Sum all values of a datasource
-     * @param dsName Datasource Name
-     * @param service Service
-     * @return 
+     * Load all statistics for the file
+     *
+     * @param storagePath
+     * @return
      */
-    public static double sum(String dsName, nService service) {
-        ArrayList<nStatisticsData> data = Load(service);
-        double value = 0;
-        
-        for(nStatisticsData  stat : data) {
-            if(stat.DataSource.equalsIgnoreCase(dsName)) {
-                value += stat.Value;
-            }
+    public static ArrayList<nStatisticsData> Load(File storagePath) {
+        ArrayList<nStatisticsData> data = new ArrayList<>();
+
+        if (storagePath.exists()) {
+            nStorage storage = nApplication.BinaryStorage;
+            nStatsDataContainer container = storage.loadContainer(storagePath);
+            data = container.getMyData();
         }
-        
-        return value;
+
+        return data;
     }
 }

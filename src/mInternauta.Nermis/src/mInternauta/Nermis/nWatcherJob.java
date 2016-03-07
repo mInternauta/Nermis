@@ -28,6 +28,7 @@ import mInternauta.Nermis.Core.nServiceStateRecord;
 import mInternauta.Nermis.Core.nServiceWatcher;
 import mInternauta.Nermis.Core.nServiceWatcherContext;
 import mInternauta.Nermis.Persistence.nServiceHelper;
+import mInternauta.Nermis.Statistics.nStatsController;
 import mInternauta.Nermis.Utils.nApplication;
 import static mInternauta.Nermis.Utils.nApplication.CurrentLogger;
 import org.quartz.Job;
@@ -108,7 +109,7 @@ public class nWatcherJob implements Job {
                     }
 
                     // Save the Rrd Data
-                    watcherContext.UpdateStats(service, nController.getStatsManager());
+                    watcherContext.UpdateStats(service, nStatsController.getStatsManager());
                 } else {
                     logger.log(Level.SEVERE, "Invalid service settings for the current watcher: {0}", serviceName);
                 }

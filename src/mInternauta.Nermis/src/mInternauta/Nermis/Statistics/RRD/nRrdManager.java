@@ -149,4 +149,9 @@ public class nRrdManager implements IStatsDataCollector
     public ArrayList<nStatisticsData> Load(nService service) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
+
+    @Override
+    public ArrayList<nStatisticsData> Load(File dataFile) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
 }
