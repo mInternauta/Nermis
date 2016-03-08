@@ -19,8 +19,11 @@
 package mInternauta.Nermis.StatsAnalyser;
 
 import java.awt.FileDialog;
+import java.awt.Graphics;
 import java.io.File;
 import java.nio.file.Paths;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 import javax.swing.table.DefaultTableModel;
 
 /**
@@ -28,9 +31,10 @@ import javax.swing.table.DefaultTableModel;
  * @author marcelo
  */
 public class nAnalyserForm extends javax.swing.JFrame {
-
+    
     private final nAnalyser analyser;
-
+    private final nWait waitWindow;
+    
     /**
      * Creates new form nAnaylserForm
      */
@@ -38,6 +42,9 @@ public class nAnalyserForm extends javax.swing.JFrame {
         initComponents();
         this.analyser = new nAnalyser();
         this.clear();
+        
+        waitWindow = new nWait();
+        waitWindow.setVisible(false);
     }
 
     /**
@@ -59,6 +66,13 @@ public class nAnalyserForm extends javax.swing.JFrame {
         txtDatasourceValue = new javax.swing.JTextField();
         txtUpdatedAt = new javax.swing.JTextField();
         jLabel3 = new javax.swing.JLabel();
+        jPanel3 = new javax.swing.JPanel();
+        jLabel4 = new javax.swing.JLabel();
+        txtDatasourceAvg = new javax.swing.JTextField();
+        txtDatasourceMax = new javax.swing.JTextField();
+        jLabel5 = new javax.swing.JLabel();
+        txtDatasourceMin = new javax.swing.JTextField();
+        jLabel6 = new javax.swing.JLabel();
         mainMenu = new javax.swing.JMenuBar();
         fileMenu = new javax.swing.JMenu();
         openFile = new javax.swing.JMenuItem();
@@ -157,6 +171,62 @@ public class nAnalyserForm extends javax.swing.JFrame {
                 .addContainerGap(104, Short.MAX_VALUE))
         );
 
+        jPanel3.setBorder(javax.swing.BorderFactory.createTitledBorder("DataSource Analyser"));
+
+        jLabel4.setText("Average Value:");
+
+        txtDatasourceAvg.setEditable(false);
+        txtDatasourceAvg.setBackground(new java.awt.Color(255, 255, 255));
+
+        txtDatasourceMax.setEditable(false);
+        txtDatasourceMax.setBackground(new java.awt.Color(255, 255, 255));
+
+        jLabel5.setText("Maximum Value:");
+
+        txtDatasourceMin.setEditable(false);
+        txtDatasourceMin.setBackground(new java.awt.Color(255, 255, 255));
+
+        jLabel6.setText("Minimum Value:");
+
+        javax.swing.GroupLayout jPanel3Layout = new javax.swing.GroupLayout(jPanel3);
+        jPanel3.setLayout(jPanel3Layout);
+        jPanel3Layout.setHorizontalGroup(
+            jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel3Layout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jLabel4)
+                    .addComponent(txtDatasourceAvg, javax.swing.GroupLayout.PREFERRED_SIZE, 160, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jLabel5)
+                    .addComponent(txtDatasourceMax, javax.swing.GroupLayout.PREFERRED_SIZE, 160, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jLabel6)
+                    .addComponent(txtDatasourceMin, javax.swing.GroupLayout.PREFERRED_SIZE, 160, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+        );
+        jPanel3Layout.setVerticalGroup(
+            jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel3Layout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addGroup(jPanel3Layout.createSequentialGroup()
+                        .addComponent(jLabel6)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(txtDatasourceMin, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(jPanel3Layout.createSequentialGroup()
+                        .addComponent(jLabel4)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(txtDatasourceAvg, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(jPanel3Layout.createSequentialGroup()
+                        .addComponent(jLabel5)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(txtDatasourceMax, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addContainerGap(196, Short.MAX_VALUE))
+        );
+
         fileMenu.setText("File");
 
         openFile.setText("Open");
@@ -182,7 +252,8 @@ public class nAnalyserForm extends javax.swing.JFrame {
                     .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(0, 0, Short.MAX_VALUE)))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jPanel3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
                 .addContainerGap())
         );
         layout.setVerticalGroup(
@@ -191,7 +262,9 @@ public class nAnalyserForm extends javax.swing.JFrame {
                 .addContainerGap()
                 .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(jPanel3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addContainerGap())
         );
 
@@ -207,11 +280,11 @@ public class nAnalyserForm extends javax.swing.JFrame {
         
         String fileName = fd.getFile();
         
-        if(fileName != null) {
+        if (fileName != null) {
             File toOpen = Paths.get(fd.getDirectory(), fileName).toFile();
             this.analyser.Load(toOpen);
             
-            DefaultTableModel model = (DefaultTableModel)statisticsTable.getModel();
+            DefaultTableModel model = (DefaultTableModel) statisticsTable.getModel();
             this.analyser.Fill(model);
         }
     }//GEN-LAST:event_openFileActionPerformed
@@ -245,10 +318,8 @@ public class nAnalyserForm extends javax.swing.JFrame {
         //</editor-fold>
 
         /* Create and display the form */
-        java.awt.EventQueue.invokeLater(new Runnable() {
-            public void run() {
-                new nAnalyserForm().setVisible(true);
-            }
+        java.awt.EventQueue.invokeLater(() -> {
+            new nAnalyserForm().setVisible(true);
         });
     }
 
@@ -257,12 +328,19 @@ public class nAnalyserForm extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
+    private javax.swing.JLabel jLabel4;
+    private javax.swing.JLabel jLabel5;
+    private javax.swing.JLabel jLabel6;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
+    private javax.swing.JPanel jPanel3;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JMenuBar mainMenu;
     private javax.swing.JMenuItem openFile;
     private javax.swing.JTable statisticsTable;
+    private javax.swing.JTextField txtDatasourceAvg;
+    private javax.swing.JTextField txtDatasourceMax;
+    private javax.swing.JTextField txtDatasourceMin;
     private javax.swing.JTextField txtDatasourceName;
     private javax.swing.JTextField txtDatasourceValue;
     private javax.swing.JTextField txtUpdatedAt;
@@ -270,12 +348,36 @@ public class nAnalyserForm extends javax.swing.JFrame {
 
     private void clear() {
         statisticsTable.setModel(new javax.swing.table.DefaultTableModel(
-            new Object [][] {
-
-            },
-            new String [] {
-                "Datasource", "Updated At", "Value"
-            }
+                new Object[][]{},
+                new String[]{
+                    "Datasource", "Updated At", "Value"
+                }
         ));
+             
+        statisticsTable.getSelectionModel().addListSelectionListener((ListSelectionEvent event) -> {
+            if (statisticsTable.getSelectedRow() > -1) {
+                
+                // Setup the Primary Text Boxes
+                String dataSource = statisticsTable.getValueAt(statisticsTable.getSelectedRow(), 0).toString();
+                String updatedAt = statisticsTable.getValueAt(statisticsTable.getSelectedRow(), 1).toString();
+                String value = statisticsTable.getValueAt(statisticsTable.getSelectedRow(), 2).toString();
+                
+                txtDatasourceName.setText(dataSource);
+                txtDatasourceValue.setText(value);
+                txtUpdatedAt.setText(updatedAt);
+                
+                // Calculate all values
+                waitWindow.setVisible(true);
+                
+                // - Calculate
+                txtDatasourceAvg.setText(String.valueOf(analyser.Average(dataSource)));
+                txtDatasourceMax.setText(String.valueOf(analyser.Maximum(dataSource)));
+                txtDatasourceMin.setText(String.valueOf(analyser.Minimum(dataSource)));
+                
+                waitWindow.setVisible(false);
+                
+                statisticsTable.requestFocus();                
+            }
+        });
     }
 }
