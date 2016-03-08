@@ -19,13 +19,17 @@
 package mInternauta.Nermis.StatsAnalyser;
 
 import java.io.File;
+import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.stream.Stream;
 import javax.swing.table.DefaultTableModel;
 import mInternauta.Nermis.Core.nStatisticsData;
+import mInternauta.Nermis.Statistics.nStatisticsExporter;
 import mInternauta.Nermis.Statistics.nStatsController;
 
 /**
@@ -48,10 +52,27 @@ public class nAnalyser {
         } else {
             Stream<nStatisticsData> stream = cData.stream()
                     .filter((stat) -> stat.DataSource.equalsIgnoreCase(dsName))
-                    .sorted((s1, s2) -> Double.compare(s1.Value, s2.Value));
+                    .sorted((s1, s2) -> Double.compare(s2.Value, s1.Value));
             value = stream.findFirst().get().Value;
 
             this.calculatedValues.put(dsName + ".Max", value);
+        }
+
+        return value;
+    }
+    
+    public double Count(String dsName) {
+        double value = 0;
+        
+        if (this.calculatedValues.containsKey(dsName + ".Records")) {
+            value = this.calculatedValues.get(dsName + ".Records");
+        } else {
+            Stream<nStatisticsData> stream = cData.stream()
+                    .filter((stat) -> stat.DataSource.equalsIgnoreCase(dsName));
+            
+            value = stream.count();
+
+            this.calculatedValues.put(dsName + ".Records", value);
         }
 
         return value;
@@ -64,7 +85,7 @@ public class nAnalyser {
         } else {
             Stream<nStatisticsData> stream = cData.stream()
                     .filter((stat) -> stat.DataSource.equalsIgnoreCase(dsName))
-                    .sorted((s1, s2) -> Double.compare(s2.Value, s1.Value));
+                    .sorted((s1, s2) -> Double.compare(s1.Value, s2.Value));
             value = stream.findFirst().get().Value;
 
             this.calculatedValues.put(dsName + ".Min", value);
@@ -101,6 +122,15 @@ public class nAnalyser {
         for (nStatisticsData stat : this.cData) {
             Date time = new Date(stat.Time);
             model.addRow(new Object[]{stat.DataSource, format.format(time), stat.Value});
+        }
+    }
+
+    public void ExportTo(File toSave) {
+        try {
+            nStatisticsExporter exporter = new nStatisticsExporter();
+            exporter.ExportData(toSave, "StatsAnalyser Data", "unknowed", cData);
+        } catch (IOException ex) {
+            Logger.getLogger(nAnalyser.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 }

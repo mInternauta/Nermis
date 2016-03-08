@@ -19,11 +19,10 @@
 package mInternauta.Nermis.StatsAnalyser;
 
 import java.awt.FileDialog;
-import java.awt.Graphics;
 import java.io.File;
 import java.nio.file.Paths;
+import javax.swing.SwingConstants;
 import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
 import javax.swing.table.DefaultTableModel;
 
 /**
@@ -45,6 +44,15 @@ public class nAnalyserForm extends javax.swing.JFrame {
         
         waitWindow = new nWait();
         waitWindow.setVisible(false);
+        
+        txtDatasourceAvg.setHorizontalAlignment(SwingConstants.RIGHT);
+        txtDatasourceMax.setHorizontalAlignment(SwingConstants.RIGHT);
+        txtDatasourceMin.setHorizontalAlignment(SwingConstants.RIGHT);
+
+        txtDatasourceAvgSeconds.setHorizontalAlignment(SwingConstants.RIGHT);
+        txtDatasourceMaxSeconds.setHorizontalAlignment(SwingConstants.RIGHT);
+        txtDatasourceMinSeconds.setHorizontalAlignment(SwingConstants.RIGHT);
+                
     }
 
     /**
@@ -73,9 +81,16 @@ public class nAnalyserForm extends javax.swing.JFrame {
         jLabel5 = new javax.swing.JLabel();
         txtDatasourceMin = new javax.swing.JTextField();
         jLabel6 = new javax.swing.JLabel();
+        txtDatasourceMaxSeconds = new javax.swing.JTextField();
+        txtDatasourceMinSeconds = new javax.swing.JTextField();
+        txtDatasourceAvgSeconds = new javax.swing.JTextField();
+        jLabel7 = new javax.swing.JLabel();
+        txtDatasourceRecs = new javax.swing.JTextField();
+        jLabel8 = new javax.swing.JLabel();
         mainMenu = new javax.swing.JMenuBar();
         fileMenu = new javax.swing.JMenu();
         openFile = new javax.swing.JMenuItem();
+        menuExport = new javax.swing.JMenuItem();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -173,7 +188,7 @@ public class nAnalyserForm extends javax.swing.JFrame {
 
         jPanel3.setBorder(javax.swing.BorderFactory.createTitledBorder("DataSource Analyser"));
 
-        jLabel4.setText("Average Value:");
+        jLabel4.setText("Average Value (ms):");
 
         txtDatasourceAvg.setEditable(false);
         txtDatasourceAvg.setBackground(new java.awt.Color(255, 255, 255));
@@ -181,12 +196,28 @@ public class nAnalyserForm extends javax.swing.JFrame {
         txtDatasourceMax.setEditable(false);
         txtDatasourceMax.setBackground(new java.awt.Color(255, 255, 255));
 
-        jLabel5.setText("Maximum Value:");
+        jLabel5.setText("Maximum Value (ms):");
 
         txtDatasourceMin.setEditable(false);
         txtDatasourceMin.setBackground(new java.awt.Color(255, 255, 255));
 
-        jLabel6.setText("Minimum Value:");
+        jLabel6.setText("Minimum Value (ms):");
+
+        txtDatasourceMaxSeconds.setEditable(false);
+        txtDatasourceMaxSeconds.setBackground(new java.awt.Color(255, 255, 255));
+
+        txtDatasourceMinSeconds.setEditable(false);
+        txtDatasourceMinSeconds.setBackground(new java.awt.Color(255, 255, 255));
+
+        txtDatasourceAvgSeconds.setEditable(false);
+        txtDatasourceAvgSeconds.setBackground(new java.awt.Color(255, 255, 255));
+
+        jLabel7.setText("In Seconds:");
+
+        txtDatasourceRecs.setEditable(false);
+        txtDatasourceRecs.setBackground(new java.awt.Color(255, 255, 255));
+
+        jLabel8.setText("Records:");
 
         javax.swing.GroupLayout jPanel3Layout = new javax.swing.GroupLayout(jPanel3);
         jPanel3.setLayout(jPanel3Layout);
@@ -195,36 +226,53 @@ public class nAnalyserForm extends javax.swing.JFrame {
             .addGroup(jPanel3Layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jLabel4)
-                    .addComponent(txtDatasourceAvg, javax.swing.GroupLayout.PREFERRED_SIZE, 160, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jLabel5)
-                    .addComponent(txtDatasourceMax, javax.swing.GroupLayout.PREFERRED_SIZE, 160, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jLabel6)
-                    .addComponent(txtDatasourceMin, javax.swing.GroupLayout.PREFERRED_SIZE, 160, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                        .addComponent(txtDatasourceMinSeconds, javax.swing.GroupLayout.PREFERRED_SIZE, 60, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGroup(jPanel3Layout.createSequentialGroup()
+                            .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                .addGroup(jPanel3Layout.createSequentialGroup()
+                                    .addComponent(jLabel7)
+                                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                    .addComponent(txtDatasourceAvgSeconds, javax.swing.GroupLayout.PREFERRED_SIZE, 60, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addComponent(jLabel4)
+                                .addComponent(txtDatasourceAvg, javax.swing.GroupLayout.PREFERRED_SIZE, 160, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                            .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                .addComponent(jLabel5)
+                                .addComponent(txtDatasourceMax, javax.swing.GroupLayout.PREFERRED_SIZE, 160, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addComponent(txtDatasourceMaxSeconds, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 60, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                            .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                .addComponent(jLabel6)
+                                .addComponent(txtDatasourceMin, javax.swing.GroupLayout.PREFERRED_SIZE, 160, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                    .addComponent(jLabel8)
+                    .addComponent(txtDatasourceRecs, javax.swing.GroupLayout.PREFERRED_SIZE, 160, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         jPanel3Layout.setVerticalGroup(
             jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel3Layout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addGroup(jPanel3Layout.createSequentialGroup()
-                        .addComponent(jLabel6)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(txtDatasourceMin, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(jPanel3Layout.createSequentialGroup()
-                        .addComponent(jLabel4)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(txtDatasourceAvg, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(jPanel3Layout.createSequentialGroup()
-                        .addComponent(jLabel5)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(txtDatasourceMax, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addContainerGap(196, Short.MAX_VALUE))
+                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel4)
+                    .addComponent(jLabel5)
+                    .addComponent(jLabel6))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(txtDatasourceAvg, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(txtDatasourceMax, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(txtDatasourceMin, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(txtDatasourceMaxSeconds, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(txtDatasourceMinSeconds, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(txtDatasourceAvgSeconds, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel7))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jLabel8)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(txtDatasourceRecs, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
         fileMenu.setText("File");
@@ -237,6 +285,14 @@ public class nAnalyserForm extends javax.swing.JFrame {
             }
         });
         fileMenu.add(openFile);
+
+        menuExport.setText("Export");
+        menuExport.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                menuExportActionPerformed(evt);
+            }
+        });
+        fileMenu.add(menuExport);
 
         mainMenu.add(fileMenu);
 
@@ -289,6 +345,23 @@ public class nAnalyserForm extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_openFileActionPerformed
 
+    private void menuExportActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menuExportActionPerformed
+       
+        FileDialog fd = new FileDialog(this, "Choose a Nermis statistic file", FileDialog.SAVE);
+        fd.setFile("*.nmd");
+        fd.setVisible(true);
+        
+        String fileName = fd.getFile();
+        
+        if (fileName != null) {
+            File toSave = Paths.get(fd.getDirectory(), fileName).toFile();
+            
+            waitWindow.open();
+            analyser.ExportTo(toSave);
+            waitWindow.close();
+        }
+    }//GEN-LAST:event_menuExportActionPerformed
+
     /**
      * @param args the command line arguments
      */
@@ -331,17 +404,24 @@ public class nAnalyserForm extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
     private javax.swing.JLabel jLabel6;
+    private javax.swing.JLabel jLabel7;
+    private javax.swing.JLabel jLabel8;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JMenuBar mainMenu;
+    private javax.swing.JMenuItem menuExport;
     private javax.swing.JMenuItem openFile;
     private javax.swing.JTable statisticsTable;
     private javax.swing.JTextField txtDatasourceAvg;
+    private javax.swing.JTextField txtDatasourceAvgSeconds;
     private javax.swing.JTextField txtDatasourceMax;
+    private javax.swing.JTextField txtDatasourceMaxSeconds;
     private javax.swing.JTextField txtDatasourceMin;
+    private javax.swing.JTextField txtDatasourceMinSeconds;
     private javax.swing.JTextField txtDatasourceName;
+    private javax.swing.JTextField txtDatasourceRecs;
     private javax.swing.JTextField txtDatasourceValue;
     private javax.swing.JTextField txtUpdatedAt;
     // End of variables declaration//GEN-END:variables
@@ -367,14 +447,29 @@ public class nAnalyserForm extends javax.swing.JFrame {
                 txtUpdatedAt.setText(updatedAt);
                 
                 // Calculate all values
-                waitWindow.setVisible(true);
+                waitWindow.open();
+                
+                double avg = analyser.Average(dataSource);
+                double max = analyser.Maximum(dataSource);
+                double min = analyser.Minimum(dataSource);
+                
+                // - In Seconds
+                double avgSecs = Math.ceil(avg / 1000);
+                double maxSecs = Math.ceil(max / 1000);
+                double minSecs = Math.ceil(min / 1000);
                 
                 // - Calculate
-                txtDatasourceAvg.setText(String.valueOf(analyser.Average(dataSource)));
-                txtDatasourceMax.setText(String.valueOf(analyser.Maximum(dataSource)));
-                txtDatasourceMin.setText(String.valueOf(analyser.Minimum(dataSource)));
+                txtDatasourceAvg.setText(String.valueOf(avg));
+                txtDatasourceMax.setText(String.valueOf(max));
+                txtDatasourceMin.setText(String.valueOf(min));
                 
-                waitWindow.setVisible(false);
+                txtDatasourceAvgSeconds.setText(String.valueOf(avgSecs));
+                txtDatasourceMaxSeconds.setText(String.valueOf(maxSecs));
+                txtDatasourceMinSeconds.setText(String.valueOf(minSecs));
+                
+                txtDatasourceRecs.setText(String.valueOf(analyser.Count(dataSource)));
+                
+                waitWindow.close();
                 
                 statisticsTable.requestFocus();                
             }

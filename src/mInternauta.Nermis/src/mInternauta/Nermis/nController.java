@@ -41,9 +41,8 @@ import org.quartz.SimpleScheduleBuilder;
 import org.quartz.SimpleTrigger;
 import org.quartz.TriggerBuilder;
 import org.quartz.impl.StdSchedulerFactory;
-import mInternauta.Nermis.Core.IStatsGraphManager;
-import mInternauta.Nermis.Core.IStatsDataCollector;
 import mInternauta.Nermis.Persistence.nServiceHelper;
+import mInternauta.Nermis.Statistics.nStatsController;
 import mInternauta.Nermis.Utils.nApplication;
 
 /**
@@ -54,9 +53,6 @@ import mInternauta.Nermis.Utils.nApplication;
 public class nController {         
     private Scheduler scheduler;    
     private nWebServer webServer;
-    
-    private static IStatsDataCollector statsManager;
-    private static IStatsGraphManager statsGraphManager;
     
     static {
         // Load all Watchers
@@ -152,7 +148,7 @@ public class nController {
         // * statsManager = new nRrdManager();
                
         for(nService service : nServiceHelper.AllServices()) {
-            statsManager.Create(service);
+            nStatsController.getStatsManager().Create(service);
         }
         
         setupStatsJob();

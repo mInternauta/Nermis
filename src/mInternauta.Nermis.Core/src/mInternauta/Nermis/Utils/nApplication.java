@@ -110,7 +110,7 @@ public final class nApplication {
                 cLogger.addHandler(new ConsoleHandler());
             }
             
-            FileHandler fileLog = new FileHandler(nResourceHelper.BuildName("Logs", logName).getAbsolutePath(), 1000024, 5);
+            FileHandler fileLog = new FileHandler(nResourceHelper.BuildName("Logs", logName).getAbsolutePath(), 4000048, 15, true);
             fileLog.setFormatter(new SimpleFormatter());
             cLogger.addHandler(fileLog);
         } catch (IOException | SecurityException ex) {

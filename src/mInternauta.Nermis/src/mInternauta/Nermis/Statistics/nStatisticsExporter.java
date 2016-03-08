@@ -89,51 +89,81 @@ public class nStatisticsExporter {
                     .getStatsManager()
                     .Load(service);
 
-            // Clean ou create the file
-            if (to.exists()) {
-                to.delete();
-            }
-
-            // - Export all data to the file
-            FileOutputStream stream = new FileOutputStream(to);
-
-            IOUtils.write("Nermis - Exported Statistics", stream);
-            IOUtils.write("\r\nService: " + service.Description, stream);
-            IOUtils.write("\r\nUrl: " + service.RefUrl, stream);
-
-            IOUtils.write("\r\n", stream);
-            IOUtils.write("\r\n", stream);
-
-            // Sum all fails and all success
-            IOUtils.write("\r\nFails: " + String.valueOf(analyser.sum("fails", service)), stream);
-            IOUtils.write("\r\nSuccess: " + String.valueOf(analyser.sum("success", service)), stream);
-
-            IOUtils.write("\r\n", stream);
-            IOUtils.write("\r\n", stream);
-
-            // Write all data 
-            IOUtils.write("\r\n|- Name           |- Date           |- Value            |", stream);
-            for (nStatisticsData stat : stats) {
-                String name = StringUtils.rightPad(stat.DataSource, 17);
-                String value = StringUtils.rightPad(String.valueOf(stat.Value), 17);
-
-                Date date = new Date(stat.Time);
-                SimpleDateFormat format = new SimpleDateFormat();
-                String cDate = StringUtils.rightPad(format.format(date), 17);
-
-                IOUtils.write("\r\n| " + name + "| " + value + "| " + cDate + " |", stream);
-            }
-
-            IOUtils.write("\r\n", stream);
-            IOUtils.write("\r\n", stream);
-
-            stream.close();
+            String description = service.Description;
+            String refUrl = service.RefUrl;
+            
+            ExportData(to, description, refUrl, stats);
         } catch (FileNotFoundException ex) {
             CurrentLogger.log(Level.SEVERE, null, ex);
         } catch (IOException ex) {
             CurrentLogger.log(Level.SEVERE, null, ex);
         }
     }   
+
+    /**
+     * Export the statistics collection to the file
+     * @param to
+     * @param description
+     * @param refUrl
+     * @param stats
+     * @throws IOException
+     * @throws FileNotFoundException 
+     */
+    public void ExportData(File to, String description, String refUrl, ArrayList<nStatisticsData> stats) 
+            throws IOException, FileNotFoundException 
+    {
+        // Clean ou create the file
+        if (to.exists()) {
+            to.delete();
+        }
+        
+        // - Export all data to the file
+        FileOutputStream stream = new FileOutputStream(to);
+        
+        IOUtils.write("Nermis - Exported Statistics", stream);
+        IOUtils.write("\r\nService: " + description, stream);
+        IOUtils.write("\r\nUrl: " + refUrl, stream);
+        
+        IOUtils.write("\r\n", stream);
+        IOUtils.write("\r\n", stream);
+        
+        // Sum all fails and all success
+        IOUtils.write("\r\nFails: " + String.valueOf(sum(stats, "fails")), stream);
+        IOUtils.write("\r\nSuccess: " + String.valueOf(sum(stats, "success")), stream);
+        
+        IOUtils.write("\r\n", stream);
+        IOUtils.write("\r\n", stream);
+        
+        // Write all data
+        IOUtils.write("\r\n|- Name            |- Date            |- Value            |", stream);
+        for (nStatisticsData stat : stats) {
+            String name = StringUtils.rightPad(stat.DataSource, 17);
+            String value = StringUtils.rightPad(String.valueOf(stat.Value), 17);
+            
+            Date date = new Date(stat.Time);
+            SimpleDateFormat format = new SimpleDateFormat();
+            String cDate = StringUtils.rightPad(format.format(date), 17);
+            
+            IOUtils.write("\r\n| " + name + "| " + value + "| " + cDate + " |", stream);
+        }
+        
+        IOUtils.write("\r\n", stream);
+        IOUtils.write("\r\n", stream);
+        
+        stream.close();
+    }
+    
+    private double sum(ArrayList<nStatisticsData> data, String dsName) {
+        double value = 0;
+        
+        for(nStatisticsData stat : data) {
+            if(stat.DataSource.equalsIgnoreCase(dsName)) {
+                value = stat.Value;
+            }
+        }
+        
+        return value;
+    }
 
     private void exportGraphs(nService service, ZipOutputStream outputZip) throws IOException {
         // Export all Graphics
